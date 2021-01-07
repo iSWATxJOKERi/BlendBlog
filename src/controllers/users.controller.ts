@@ -9,5 +9,9 @@ export const getUser = (req: Request, res: Response) => {
 }
 
 export const createUser = (req: Request, res: Response) => {
-    res.send('user' + req.params.id);
+    res.send('user' + req.params.username);
+}
+
+export const updateUser = (req: Request, res: Response) => {
+    res.send('user' + req.params.username);
 }
