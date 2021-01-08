@@ -1,4 +1,6 @@
 import { createUser, getUser, getUsers, updateUser } from "../controllers/users.controller";
+import validateRegistrationInput from "../validation/registration";
+import validText from "../validation/validText";
 
 describe("UsersController.ts", () => {
     it("should export a function called getUsers", () => {
@@ -13,5 +15,54 @@ describe("UsersController.ts", () => {
     it("should export a function called updateUser", () => {
         expect(updateUser).toBeDefined();
     });
+})
+
+describe("User Registration", () => {
+    describe("validText()", () => {
+        it("should be defined", () => {
+            expect(validText).toBeDefined();
+        });
+        it("should return true on valid input", () => {
+            expect(validText("Barnabas Pandy")).toBe(true);
+        })
+        it("should return false on invalid input", () => {
+            expect(validText(" ")).toBe(false);
+        })
+    })
+    describe("validateRegistrationInput()", () => {
+        let fakeuser = {
+            fullname: "Rakim Mayers",
+            username: "ASAP Rocky",
+            password: "rockyisthebest",
+            password2: "rockyisthebest",
+            valid: true
+        }
+        let fakeuser2 = {
+            fullname: "Rakim Mayers",
+            username: "",
+            password: "",
+            password2: "rockyisthebest",
+            valid: true
+        }
+        let correct = {
+            errors: {
+                fullname: "",
+                username: "",
+                password: "",
+                password2: "",
+                valid: true
+            },
+            isValid: true
+        }
+        it("should be defined", () => {
+            expect(validateRegistrationInput).toBeDefined();
+        });
+        it("should return true on valid input", () => {
+            expect(validateRegistrationInput(fakeuser)).toEqual(correct);
+        })
+        it("should return false on invalid input", () => {
+            expect(validateRegistrationInput(fakeuser2)).toHaveProperty('isValid', false);
+        })
+    })
 })
 

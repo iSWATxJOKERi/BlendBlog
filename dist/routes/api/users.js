@@ -6,5 +6,6 @@ const users_controller_1 = require("../../controllers/users.controller");
 router.get("/users/all", users_controller_1.getUsers);
 router.get("/users/:id", users_controller_1.getUser);
 router.post("/users/register", users_controller_1.createUser);
+router.post("/users/login", users_controller_1.loginUser);
 router.patch("users/:id", users_controller_1.updateUser);
 exports.default = router;
