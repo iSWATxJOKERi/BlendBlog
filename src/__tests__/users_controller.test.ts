@@ -1,5 +1,6 @@
 import { createUser, getUser, getUsers, updateUser } from "../controllers/users.controller";
-import validateRegistrationInput from "../validation/registration";
+import { validateLoginInput } from "../validation/login";
+import { validateRegistrationInput } from "../validation/registration";
 import validText from "../validation/validText";
 
 describe("UsersController.ts", () => {
@@ -62,6 +63,49 @@ describe("User Registration", () => {
         })
         it("should return false on invalid input", () => {
             expect(validateRegistrationInput(fakeuser2)).toHaveProperty('isValid', false);
+        })
+    })
+})
+
+describe("User Login", () => {
+    describe("validText()", () => {
+        it("should be defined", () => {
+            expect(validText).toBeDefined();
+        });
+        it("should return true on valid input", () => {
+            expect(validText("Barnabas Pandy")).toBe(true);
+        })
+        it("should return false on invalid input", () => {
+            expect(validText(" ")).toBe(false);
+        })
+    })
+    describe("validateLoginInput()", () => {
+        let fakeuser = {
+            username: "ASAP Rocky",
+            password: "rockyisthebest",
+            valid: true
+        }
+        let fakeuser2 = {
+            username: "",
+            password: "",
+            valid: true
+        }
+        let correct = {
+            errors: {
+                username: "",
+                password: "",
+                valid: true
+            },
+            isValid: true
+        }
+        it("should be defined", () => {
+            expect(validateLoginInput).toBeDefined();
+        });
+        it("should return true on valid input", () => {
+            expect(validateLoginInput(fakeuser)).toEqual(correct);
+        })
+        it("should return false on invalid input", () => {
+            expect(validateLoginInput(fakeuser2)).toHaveProperty('isValid', false);
         })
     })
 })

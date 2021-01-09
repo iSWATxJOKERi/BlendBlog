@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.validateRegistrationInput = void 0;
 const validator_1 = __importDefault(require("validator"));
 const validText_1 = __importDefault(require("./validText"));
-function validateRegistrationInput(data) {
+const validateRegistrationInput = (data) => {
     let errors = {
         fullname: "",
         username: "",
@@ -23,6 +24,14 @@ function validateRegistrationInput(data) {
     }
     if (validator_1.default.isEmpty(data.fullname)) {
         errors.fullname = "Full Name field is required";
+        errors.valid = false;
+    }
+    if (!validator_1.default.isLength(data.username, { min: 2, max: 16 })) {
+        errors.username = "Username must be between 2 and 16 characters";
+        errors.valid = false;
+    }
+    if (validator_1.default.isEmpty(data.username)) {
+        errors.username = "Username field is required";
         errors.valid = false;
     }
     if (!validator_1.default.isLength(data.password, { min: 6, max: 30 })) {
@@ -45,5 +54,5 @@ function validateRegistrationInput(data) {
         errors,
         isValid: errors.valid
     };
-}
-exports.default = validateRegistrationInput;
+};
+exports.validateRegistrationInput = validateRegistrationInput;

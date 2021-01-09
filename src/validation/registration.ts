@@ -1,7 +1,7 @@
 import validator from 'validator';
 import validText from './validText';
 
-interface UserRegistrationRequest {
+export interface UserRegistrationRequest {
     fullname: string,
     username: string,
     password: string,
@@ -9,7 +9,7 @@ interface UserRegistrationRequest {
     valid: boolean
 }
 
-function validateRegistrationInput(data: UserRegistrationRequest) {
+export const validateRegistrationInput = (data: UserRegistrationRequest) => {
     let errors: UserRegistrationRequest = {
         fullname: "",
         username: "",
@@ -30,6 +30,16 @@ function validateRegistrationInput(data: UserRegistrationRequest) {
 
     if(validator.isEmpty(data.fullname)) {
         errors.fullname = "Full Name field is required";
+        errors.valid = false;
+    }
+
+    if(!validator.isLength(data.username, { min: 2, max: 16 })) {
+        errors.username = "Username must be between 2 and 16 characters";
+        errors.valid = false;
+    }
+
+    if(validator.isEmpty(data.username)) {
+        errors.username = "Username field is required";
         errors.valid = false;
     }
 
@@ -58,5 +68,3 @@ function validateRegistrationInput(data: UserRegistrationRequest) {
         isValid: errors.valid
     }
 }
-
-export default validateRegistrationInput;
