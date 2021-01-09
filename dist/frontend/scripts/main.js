@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const navbar_1 = __importDefault(require("./navbar"));
-require("../../index.scss");
+require("../../../index.scss");
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.createElement('section');
     app.setAttribute('id', 'application');

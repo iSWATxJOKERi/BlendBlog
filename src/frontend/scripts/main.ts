@@ -1,5 +1,5 @@
 import navbar from "./navbar";
-import '../../index.scss';
+import '../../../index.scss';
 
 document.addEventListener("DOMContentLoaded", () => {
     const app: HTMLElement = document.createElement('section');

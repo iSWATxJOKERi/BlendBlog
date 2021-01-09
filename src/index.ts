@@ -6,9 +6,6 @@ import path from 'path';
 
 import users from './routes/api/users';
 
-app.get('/', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '/index.html'));
-})
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/api", users);

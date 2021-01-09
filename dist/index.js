@@ -7,11 +7,7 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const app = express_1.default();
 const body_parser_1 = __importDefault(require("body-parser"));
-const path_1 = __importDefault(require("path"));
 const users_1 = __importDefault(require("./routes/api/users"));
-app.get('/', (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, '/index.html'));
-});
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use("/api", users_1.default);
