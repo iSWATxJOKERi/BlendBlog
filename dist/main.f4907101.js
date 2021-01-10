@@ -117,21 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"dist/frontend/scripts/navbar.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function navbar(app) {
-  var navbar = document.createElement('div');
-  navbar.classList.add('navbar');
-  app.appendChild(navbar);
-}
-
-exports.default = navbar;
-},{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+})({"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -208,7 +194,38 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
+},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"dist/frontend/scripts/navbar.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loggedOutNavbar = exports.loggedInNavbar = void 0;
+
+var loggedInNavbar = function loggedInNavbar(app) {
+  //creates loggedin navbar
+  var navbar = document.createElement('div');
+  navbar.classList.add('navbar');
+  app.appendChild(navbar);
+};
+
+exports.loggedInNavbar = loggedInNavbar;
+
+var loggedOutNavbar = function loggedOutNavbar(app) {
+  //creates loggedout navbar
+  var navbar = document.createElement('div');
+  navbar.classList.add('navbar'); //creates logo
+
+  var logo = document.createElement('h1');
+  logo.innerHTML = 'Blend Blog';
+  logo.classList.add('logo'); //appends respective elements to respective parents to navbar
+
+  navbar.appendChild(logo);
+  app.appendChild(navbar);
+};
+
+exports.loggedOutNavbar = loggedOutNavbar;
+},{}],"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -2008,7 +2025,7 @@ module.exports.default = axios;
 
 },{"./utils":"node_modules/axios/lib/utils.js","./helpers/bind":"node_modules/axios/lib/helpers/bind.js","./core/Axios":"node_modules/axios/lib/core/Axios.js","./core/mergeConfig":"node_modules/axios/lib/core/mergeConfig.js","./defaults":"node_modules/axios/lib/defaults.js","./cancel/Cancel":"node_modules/axios/lib/cancel/Cancel.js","./cancel/CancelToken":"node_modules/axios/lib/cancel/CancelToken.js","./cancel/isCancel":"node_modules/axios/lib/cancel/isCancel.js","./helpers/spread":"node_modules/axios/lib/helpers/spread.js","./helpers/isAxiosError":"node_modules/axios/lib/helpers/isAxiosError.js"}],"node_modules/axios/index.js":[function(require,module,exports) {
 module.exports = require('./lib/axios');
-},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"dist/frontend/util/user_api_util.js":[function(require,module,exports) {
+},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"dist/frontend/util/session_api_util.js":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -2020,19 +2037,111 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUsers = void 0;
+exports.setAuthToken = void 0;
 
 var axios_1 = __importDefault(require("axios"));
 
-var getUsers = function getUsers() {
-  return axios_1.default({
-    method: 'get',
-    url: '/api/users/all'
-  });
+var setAuthToken = function setAuthToken(token) {
+  if (token) {
+    axios_1.default.defaults.headers.common['Authorization'] = token;
+  } else {
+    delete axios_1.default.defaults.headers.common['Authorization'];
+  }
 };
 
-exports.getUsers = getUsers;
-},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/main.js":[function(require,module,exports) {
+exports.setAuthToken = setAuthToken;
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var sessionCreator = function sessionCreator(app) {
+  //creates session container
+  var sessionsContainer = document.createElement('section');
+  sessionsContainer.setAttribute('id', 'sessions-container'); //creates login container
+
+  var loginContainer = document.createElement('div');
+  loginContainer.setAttribute('id', 'login-container'); //creates login form and appends to login container
+
+  var username = document.createElement('input');
+  username.classList.add('username-input', 'session-input');
+  username.setAttribute('placeholder', 'Username');
+  var password = document.createElement('input');
+  password.classList.add('password-input', 'session-input');
+  password.setAttribute('placeholder', 'Password');
+  var newAccount = document.createElement('span');
+  newAccount.classList.add('create-account');
+  newAccount.innerHTML = 'Create account instead';
+  var loginBtn = document.createElement('span');
+  loginBtn.classList.add('login-btn', 'btn');
+  loginBtn.innerHTML = 'Log In';
+  loginContainer.appendChild(username);
+  loginContainer.appendChild(password);
+  loginContainer.appendChild(newAccount);
+  loginContainer.appendChild(loginBtn); //creates signup container
+
+  var signupContainer = document.createElement('div');
+  signupContainer.setAttribute('id', 'signup-container'); //creates signup form and appends to signup container
+
+  var fullname = document.createElement('input');
+  fullname.classList.add('fullname-input', 'session-input');
+  fullname.setAttribute('placeholder', 'Fullname');
+  var signup_user = document.createElement('input');
+  signup_user.classList.add('signup-user-input', 'session-input');
+  signup_user.setAttribute('placeholder', 'Username');
+  var passContainer = document.createElement('div');
+  passContainer.classList.add('pass-container');
+  var signup_pass = document.createElement('input');
+  signup_pass.classList.add('signup-pass-input', 'session-input');
+  signup_pass.setAttribute('placeholder', 'Password');
+  var confirm_password = document.createElement('input');
+  confirm_password.classList.add('confirm-password-input', 'session-input');
+  confirm_password.setAttribute('placeholder', 'Confirm Password');
+  var signin = document.createElement('span');
+  signin.classList.add('signin');
+  signin.innerHTML = 'Back to log in';
+  var signupBtn = document.createElement('span');
+  signupBtn.classList.add('signup-btn', 'btn');
+  signupBtn.innerHTML = 'Create my account';
+  passContainer.appendChild(signup_pass);
+  passContainer.appendChild(confirm_password);
+  signupContainer.appendChild(fullname);
+  signupContainer.appendChild(signup_user);
+  signupContainer.appendChild(passContainer);
+  signupContainer.appendChild(signin);
+  signupContainer.appendChild(signupBtn);
+  signupContainer.style.display = "none"; //appends elements to application
+
+  sessionsContainer.appendChild(loginContainer);
+  sessionsContainer.appendChild(signupContainer);
+  app.appendChild(sessionsContainer); //add onclick's to switch forms
+
+  newAccount.onclick = function () {
+    toggleForm('login');
+  };
+
+  signin.onclick = function () {
+    toggleForm('signup');
+  };
+};
+
+function toggleForm(field) {
+  var login = document.getElementById('login-container');
+  var signup = document.getElementById('signup-container');
+
+  if (field === 'login') {
+    login.style.display = "none";
+    signup.style.display = "flex";
+  } else {
+    login.style.display = "flex";
+    signup.style.display = "none";
+  }
+}
+
+exports.default = sessionCreator;
+},{}],"dist/frontend/scripts/main.js":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -2044,25 +2153,31 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var navbar_1 = __importDefault(require("./navbar"));
 
 require("../../../reset.scss");
 
 require("../../../index.scss");
 
-var user_api_util_1 = require("../util/user_api_util");
+var navbar_1 = require("./navbar");
+
+var session_api_util_1 = require("../util/session_api_util");
+
+var session_1 = __importDefault(require("./session"));
 
 document.addEventListener("DOMContentLoaded", function () {
   var app = document.createElement('section');
   app.setAttribute('id', 'application');
   document.body.appendChild(app);
-  navbar_1.default(app);
-  user_api_util_1.getUsers().then(function (users) {
-    console.log(users);
-  });
+
+  if (localStorage.jwtToken && localStorage.jwtToken !== 'undefined') {
+    session_api_util_1.setAuthToken(localStorage.jwtToken);
+    navbar_1.loggedInNavbar(app);
+  } else {
+    navbar_1.loggedOutNavbar(app);
+    session_1.default(app);
+  }
 });
-},{"./navbar":"dist/frontend/scripts/navbar.js","../../../reset.scss":"reset.scss","../../../index.scss":"index.scss","../util/user_api_util":"dist/frontend/util/user_api_util.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../../../reset.scss":"reset.scss","../../../index.scss":"index.scss","./navbar":"dist/frontend/scripts/navbar.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./session":"dist/frontend/scripts/session.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
