@@ -7,6 +7,7 @@ exports.sessionCreator = void 0;
 const session_api_util_1 = require("../util/session_api_util");
 const home_1 = require("./home");
 const jwt_decode_1 = __importDefault(require("jwt-decode"));
+const misc_util_1 = require("../util/misc_util");
 const sessionCreator = (app) => {
     //creates session container
     const sessionsContainer = document.createElement('section');
@@ -45,11 +46,13 @@ const sessionCreator = (app) => {
     const passContainer = document.createElement('div');
     passContainer.classList.add('pass-container');
     const signup_pass = document.createElement('input');
+    signup_pass.setAttribute('type', 'password');
     signup_pass.classList.add('signup-pass-input', 'session-input');
     signup_pass.setAttribute('placeholder', 'Password');
     const confirm_password = document.createElement('input');
     confirm_password.classList.add('confirm-password-input', 'session-input');
     confirm_password.setAttribute('placeholder', 'Confirm Password');
+    confirm_password.setAttribute('type', 'password');
     const signin = document.createElement('span');
     signin.classList.add('signin');
     signin.innerHTML = 'Back to log in';
@@ -72,11 +75,14 @@ const sessionCreator = (app) => {
     newAccount.onclick = () => { toggleForm('login'); };
     signin.onclick = () => { toggleForm('signup'); };
     loginBtn.onclick = () => { signinUser(); };
+    signupBtn.onclick = () => { signupUser(); };
 };
 exports.sessionCreator = sessionCreator;
 function toggleForm(field) {
     const login = document.getElementById('login-container');
     const signup = document.getElementById('signup-container');
+    const b1 = document.getElementsByClassName('session-input');
+    misc_util_1.clearInputs(b1);
     if (field === 'login') {
         login.style.display = "none";
         signup.style.display = "flex";
@@ -94,6 +100,28 @@ function signinUser() {
         password: pw.value
     };
     session_api_util_1.login(user).then(res => {
+        const { token } = res.data;
+        localStorage.setItem('jwtToken', token);
+        session_api_util_1.setAuthToken(token);
+        const decoded = jwt_decode_1.default(token);
+        console.log(decoded);
+        document.getElementById('sessions-container').style.display = "none";
+        const app = document.getElementById('application');
+        home_1.home(app);
+    });
+}
+function signupUser() {
+    const fn = document.getElementsByClassName('fullname-input')[0];
+    const un = document.getElementsByClassName('signup-user-input')[0];
+    const pw = document.getElementsByClassName('signup-pass-input')[0];
+    const cp = document.getElementsByClassName('confirm-password-input')[0];
+    const user = {
+        fullname: fn.value,
+        username: un.value,
+        password: pw.value,
+        password2: cp.value
+    };
+    session_api_util_1.signup(user).then(res => {
         const { token } = res.data;
         localStorage.setItem('jwtToken', token);
         session_api_util_1.setAuthToken(token);

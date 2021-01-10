@@ -2060,7 +2060,22 @@ var setAuthToken = function setAuthToken(token) {
 };
 
 exports.setAuthToken = setAuthToken;
-},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/home.js":[function(require,module,exports) {
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/util/misc_util.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.clearInputs = void 0;
+
+var clearInputs = function clearInputs(elements) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].value = "";
+  }
+};
+
+exports.clearInputs = clearInputs;
+},{}],"dist/frontend/scripts/home.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2068,9 +2083,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.home = void 0;
 
+var misc_util_1 = require("../util/misc_util");
+
 var session_api_util_1 = require("../util/session_api_util");
 
 var home = function home(app) {
+  var b1 = document.getElementsByClassName('session-input');
+  misc_util_1.clearInputs(b1);
   var logout = document.createElement('span');
   logout.classList.add('logout');
   logout.innerHTML = 'Logout';
@@ -2091,7 +2110,7 @@ function logUserOut(ele) {
   ele.style.display = "none";
   document.getElementById('sessions-container').style.display = "flex";
 }
-},{"../util/session_api_util":"dist/frontend/util/session_api_util.js"}],"node_modules/jwt-decode/build/jwt-decode.esm.js":[function(require,module,exports) {
+},{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/session_api_util":"dist/frontend/util/session_api_util.js"}],"node_modules/jwt-decode/build/jwt-decode.esm.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2184,6 +2203,8 @@ var home_1 = require("./home");
 
 var jwt_decode_1 = __importDefault(require("jwt-decode"));
 
+var misc_util_1 = require("../util/misc_util");
+
 var sessionCreator = function sessionCreator(app) {
   //creates session container
   var sessionsContainer = document.createElement('section');
@@ -2222,11 +2243,13 @@ var sessionCreator = function sessionCreator(app) {
   var passContainer = document.createElement('div');
   passContainer.classList.add('pass-container');
   var signup_pass = document.createElement('input');
+  signup_pass.setAttribute('type', 'password');
   signup_pass.classList.add('signup-pass-input', 'session-input');
   signup_pass.setAttribute('placeholder', 'Password');
   var confirm_password = document.createElement('input');
   confirm_password.classList.add('confirm-password-input', 'session-input');
   confirm_password.setAttribute('placeholder', 'Confirm Password');
+  confirm_password.setAttribute('type', 'password');
   var signin = document.createElement('span');
   signin.classList.add('signin');
   signin.innerHTML = 'Back to log in';
@@ -2257,6 +2280,10 @@ var sessionCreator = function sessionCreator(app) {
   loginBtn.onclick = function () {
     signinUser();
   };
+
+  signupBtn.onclick = function () {
+    signupUser();
+  };
 };
 
 exports.sessionCreator = sessionCreator;
@@ -2264,6 +2291,8 @@ exports.sessionCreator = sessionCreator;
 function toggleForm(field) {
   var login = document.getElementById('login-container');
   var signup = document.getElementById('signup-container');
+  var b1 = document.getElementsByClassName('session-input');
+  misc_util_1.clearInputs(b1);
 
   if (field === 'login') {
     login.style.display = "none";
@@ -2292,7 +2321,30 @@ function signinUser() {
     home_1.home(app);
   });
 }
-},{"../util/session_api_util":"dist/frontend/util/session_api_util.js","./home":"dist/frontend/scripts/home.js","jwt-decode":"node_modules/jwt-decode/build/jwt-decode.esm.js"}],"dist/frontend/scripts/main.js":[function(require,module,exports) {
+
+function signupUser() {
+  var fn = document.getElementsByClassName('fullname-input')[0];
+  var un = document.getElementsByClassName('signup-user-input')[0];
+  var pw = document.getElementsByClassName('signup-pass-input')[0];
+  var cp = document.getElementsByClassName('confirm-password-input')[0];
+  var user = {
+    fullname: fn.value,
+    username: un.value,
+    password: pw.value,
+    password2: cp.value
+  };
+  session_api_util_1.signup(user).then(function (res) {
+    var token = res.data.token;
+    localStorage.setItem('jwtToken', token);
+    session_api_util_1.setAuthToken(token);
+    var decoded = jwt_decode_1.default(token);
+    console.log(decoded);
+    document.getElementById('sessions-container').style.display = "none";
+    var app = document.getElementById('application');
+    home_1.home(app);
+  });
+}
+},{"../util/session_api_util":"dist/frontend/util/session_api_util.js","./home":"dist/frontend/scripts/home.js","jwt-decode":"node_modules/jwt-decode/build/jwt-decode.esm.js","../util/misc_util":"dist/frontend/util/misc_util.js"}],"dist/frontend/scripts/main.js":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {

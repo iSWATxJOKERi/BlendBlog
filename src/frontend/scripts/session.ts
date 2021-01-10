@@ -1,6 +1,7 @@
-import { login, setAuthToken } from "../util/session_api_util";
+import { login, setAuthToken, signup } from "../util/session_api_util";
 import { home } from "./home";
 import jwt_decode from 'jwt-decode';
+import { clearInputs } from "../util/misc_util";
 
 export const sessionCreator = (app: HTMLElement) => {
     //creates session container
@@ -44,11 +45,13 @@ export const sessionCreator = (app: HTMLElement) => {
     const passContainer: HTMLElement = document.createElement('div');
     passContainer.classList.add('pass-container');
     const signup_pass: HTMLInputElement = document.createElement('input');
+    signup_pass.setAttribute('type', 'password');
     signup_pass.classList.add('signup-pass-input', 'session-input');
     signup_pass.setAttribute('placeholder', 'Password');
     const confirm_password: HTMLInputElement = document.createElement('input');
     confirm_password.classList.add('confirm-password-input', 'session-input');
     confirm_password.setAttribute('placeholder', 'Confirm Password');
+    confirm_password.setAttribute('type', 'password');
     const signin: HTMLElement = document.createElement('span');
     signin.classList.add('signin');
     signin.innerHTML = 'Back to log in'
@@ -73,12 +76,15 @@ export const sessionCreator = (app: HTMLElement) => {
     newAccount.onclick = () => { toggleForm('login') };
     signin.onclick = () => { toggleForm('signup') };
     loginBtn.onclick = () => { signinUser() };
+    signupBtn.onclick = () => { signupUser() };
 }
 
 function toggleForm(field: string) {
     const login: HTMLElement = document.getElementById('login-container')!;
     const signup: HTMLElement = document.getElementById('signup-container')!;
-
+    
+    const b1: HTMLCollectionOf<HTMLInputElement> = document.getElementsByClassName('session-input') as HTMLCollectionOf<HTMLInputElement>;
+    clearInputs(b1);
     if(field === 'login') {
         login.style.display = "none";
         signup.style.display = "flex";
@@ -107,3 +113,29 @@ function signinUser() {
         home(app);
     })
 }
+
+function signupUser() {
+    const fn = document.getElementsByClassName('fullname-input')[0] as HTMLInputElement;
+    const un = document.getElementsByClassName('signup-user-input')[0] as HTMLInputElement;
+    const pw = document.getElementsByClassName('signup-pass-input')[0] as HTMLInputElement;
+    const cp = document.getElementsByClassName('confirm-password-input')[0] as HTMLInputElement;
+
+    const user = {
+        fullname: fn.value,
+        username: un.value,
+        password: pw.value,
+        password2: cp.value
+    }
+
+    signup(user).then(res => {
+        const { token } = res.data;
+        localStorage.setItem('jwtToken', token);
+        setAuthToken(token);
+        const decoded = jwt_decode(token);
+        console.log(decoded);
+        document.getElementById('sessions-container')!.style.display = "none";
+        const app: HTMLElement = document.getElementById('application')!;
+        home(app);
+    })
+}
+

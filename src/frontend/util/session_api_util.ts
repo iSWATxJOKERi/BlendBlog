@@ -5,6 +5,13 @@ interface SigninUser {
     password: string
 }
 
+interface SignupUser {
+    fullname: string,
+    username: string,
+    password: string,
+    password2: string
+}
+
 export const login = (user: SigninUser) => {
     return axios({
         method: 'post',
@@ -13,7 +20,7 @@ export const login = (user: SigninUser) => {
     })
 }
 
-export const signup = (user: object) => {
+export const signup = (user: SignupUser) => {
     return axios({
         method: 'post',
         url: '/api/users/register',

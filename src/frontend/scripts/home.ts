@@ -1,6 +1,9 @@
+import { clearInputs } from "../util/misc_util";
 import { setAuthToken } from "../util/session_api_util";
 
 export const home = (app: HTMLElement) => {
+    const b1: HTMLCollectionOf<HTMLInputElement> = document.getElementsByClassName('session-input') as HTMLCollectionOf<HTMLInputElement>;
+    clearInputs(b1);
     const logout : HTMLElement = document.createElement('span');
     logout.classList.add('logout');
     logout.innerHTML = 'Logout';
