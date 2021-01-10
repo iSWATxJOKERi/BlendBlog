@@ -1,5 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sessionCreator = void 0;
+const session_api_util_1 = require("../util/session_api_util");
+const home_1 = require("./home");
+const jwt_decode_1 = __importDefault(require("jwt-decode"));
 const sessionCreator = (app) => {
     //creates session container
     const sessionsContainer = document.createElement('section');
@@ -14,6 +21,7 @@ const sessionCreator = (app) => {
     const password = document.createElement('input');
     password.classList.add('password-input', 'session-input');
     password.setAttribute('placeholder', 'Password');
+    password.setAttribute('type', 'password');
     const newAccount = document.createElement('span');
     newAccount.classList.add('create-account');
     newAccount.innerHTML = 'Create account instead';
@@ -63,7 +71,9 @@ const sessionCreator = (app) => {
     //add onclick's to switch forms
     newAccount.onclick = () => { toggleForm('login'); };
     signin.onclick = () => { toggleForm('signup'); };
+    loginBtn.onclick = () => { signinUser(); };
 };
+exports.sessionCreator = sessionCreator;
 function toggleForm(field) {
     const login = document.getElementById('login-container');
     const signup = document.getElementById('signup-container');
@@ -76,4 +86,21 @@ function toggleForm(field) {
         signup.style.display = "none";
     }
 }
-exports.default = sessionCreator;
+function signinUser() {
+    const un = document.getElementsByClassName('username-input')[0];
+    const pw = document.getElementsByClassName('password-input')[0];
+    const user = {
+        username: un.value,
+        password: pw.value
+    };
+    session_api_util_1.login(user).then(res => {
+        const { token } = res.data;
+        localStorage.setItem('jwtToken', token);
+        session_api_util_1.setAuthToken(token);
+        const decoded = jwt_decode_1.default(token);
+        console.log(decoded);
+        document.getElementById('sessions-container').style.display = "none";
+        const app = document.getElementById('application');
+        home_1.home(app);
+    });
+}

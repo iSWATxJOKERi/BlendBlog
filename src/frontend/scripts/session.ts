@@ -1,4 +1,8 @@
-const sessionCreator = (app: HTMLElement) => {
+import { login, setAuthToken } from "../util/session_api_util";
+import { home } from "./home";
+import jwt_decode from 'jwt-decode';
+
+export const sessionCreator = (app: HTMLElement) => {
     //creates session container
     const sessionsContainer: HTMLElement = document.createElement('section');
     sessionsContainer.setAttribute('id', 'sessions-container');
@@ -8,12 +12,13 @@ const sessionCreator = (app: HTMLElement) => {
     loginContainer.setAttribute('id', 'login-container');
 
     //creates login form and appends to login container
-    const username: HTMLElement = document.createElement('input');
+    const username: HTMLInputElement = document.createElement('input');
     username.classList.add('username-input', 'session-input');
     username.setAttribute('placeholder', 'Username');
-    const password: HTMLElement = document.createElement('input');
+    const password: HTMLInputElement = document.createElement('input');
     password.classList.add('password-input', 'session-input');
     password.setAttribute('placeholder', 'Password');
+    password.setAttribute('type', 'password');
     const newAccount: HTMLElement = document.createElement('span');
     newAccount.classList.add('create-account');
     newAccount.innerHTML = 'Create account instead'
@@ -30,18 +35,18 @@ const sessionCreator = (app: HTMLElement) => {
     signupContainer.setAttribute('id', 'signup-container');
 
     //creates signup form and appends to signup container
-    const fullname: HTMLElement = document.createElement('input');
+    const fullname: HTMLInputElement = document.createElement('input');
     fullname.classList.add('fullname-input', 'session-input');
     fullname.setAttribute('placeholder', 'Fullname');
-    const signup_user: HTMLElement = document.createElement('input');
+    const signup_user: HTMLInputElement = document.createElement('input');
     signup_user.classList.add('signup-user-input', 'session-input');
     signup_user.setAttribute('placeholder', 'Username');
     const passContainer: HTMLElement = document.createElement('div');
     passContainer.classList.add('pass-container');
-    const signup_pass: HTMLElement = document.createElement('input');
+    const signup_pass: HTMLInputElement = document.createElement('input');
     signup_pass.classList.add('signup-pass-input', 'session-input');
     signup_pass.setAttribute('placeholder', 'Password');
-    const confirm_password: HTMLElement = document.createElement('input');
+    const confirm_password: HTMLInputElement = document.createElement('input');
     confirm_password.classList.add('confirm-password-input', 'session-input');
     confirm_password.setAttribute('placeholder', 'Confirm Password');
     const signin: HTMLElement = document.createElement('span');
@@ -65,8 +70,9 @@ const sessionCreator = (app: HTMLElement) => {
     app.appendChild(sessionsContainer);
 
     //add onclick's to switch forms
-    newAccount.onclick = () => { toggleForm('login') }
-    signin.onclick = () => { toggleForm('signup') }
+    newAccount.onclick = () => { toggleForm('login') };
+    signin.onclick = () => { toggleForm('signup') };
+    loginBtn.onclick = () => { signinUser() };
 }
 
 function toggleForm(field: string) {
@@ -82,4 +88,22 @@ function toggleForm(field: string) {
     }
 }
 
-export default sessionCreator;
+function signinUser() {
+    const un = document.getElementsByClassName('username-input')[0] as HTMLInputElement;
+    const pw = document.getElementsByClassName('password-input')[0] as HTMLInputElement;
+    const user = {
+        username: un.value,
+        password: pw.value
+    }
+
+    login(user).then(res => {
+        const { token } = res.data;
+        localStorage.setItem('jwtToken', token);
+        setAuthToken(token);
+        const decoded = jwt_decode(token);
+        console.log(decoded);
+        document.getElementById('sessions-container')!.style.display = "none";
+        const app: HTMLElement = document.getElementById('application')!;
+        home(app);
+    })
+}

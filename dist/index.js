@@ -8,7 +8,11 @@ const express_1 = __importDefault(require("express"));
 const app = express_1.default();
 const body_parser_1 = __importDefault(require("body-parser"));
 const path_1 = __importDefault(require("path"));
+const passport_1 = __importDefault(require("passport"));
+const passport_2 = __importDefault(require("./config/passport"));
 const users_1 = __importDefault(require("./routes/api/users"));
+app.use(passport_1.default.initialize());
+passport_2.default(passport_1.default);
 app.use(express_1.default.static('dist'));
 app.get('/', (req, res) => {
     res.sendFile(path_1.default.join(__dirname, '../dist', 'index.html'));

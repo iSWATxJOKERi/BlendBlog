@@ -200,18 +200,8 @@ module.hot.accept(reloadCSS);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loggedOutNavbar = exports.loggedInNavbar = void 0;
 
-var loggedInNavbar = function loggedInNavbar(app) {
-  //creates loggedin navbar
-  var navbar = document.createElement('div');
-  navbar.classList.add('navbar');
-  app.appendChild(navbar);
-};
-
-exports.loggedInNavbar = loggedInNavbar;
-
-var loggedOutNavbar = function loggedOutNavbar(app) {
+var navbar = function navbar(app) {
   //creates loggedout navbar
   var navbar = document.createElement('div');
   navbar.classList.add('navbar'); //creates logo
@@ -224,7 +214,7 @@ var loggedOutNavbar = function loggedOutNavbar(app) {
   app.appendChild(navbar);
 };
 
-exports.loggedOutNavbar = loggedOutNavbar;
+exports.default = navbar;
 },{}],"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
 'use strict';
 
@@ -2037,9 +2027,29 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setAuthToken = void 0;
+exports.setAuthToken = exports.signup = exports.login = void 0;
 
 var axios_1 = __importDefault(require("axios"));
+
+var login = function login(user) {
+  return axios_1.default({
+    method: 'post',
+    url: '/api/users/login',
+    data: user
+  });
+};
+
+exports.login = login;
+
+var signup = function signup(user) {
+  return axios_1.default({
+    method: 'post',
+    url: '/api/users/register',
+    data: user
+  });
+};
+
+exports.signup = signup;
 
 var setAuthToken = function setAuthToken(token) {
   if (token) {
@@ -2050,12 +2060,129 @@ var setAuthToken = function setAuthToken(token) {
 };
 
 exports.setAuthToken = setAuthToken;
-},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/home.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.home = void 0;
+
+var session_api_util_1 = require("../util/session_api_util");
+
+var home = function home(app) {
+  var logout = document.createElement('span');
+  logout.classList.add('logout');
+  logout.innerHTML = 'Logout';
+  var navbar = document.getElementsByClassName('navbar')[0];
+  navbar.appendChild(logout);
+  navbar.style.padding = '0 25px 0 0';
+
+  logout.onclick = function () {
+    logUserOut(logout);
+  };
+};
+
+exports.home = home;
+
+function logUserOut(ele) {
+  localStorage.removeItem('jwtToken');
+  session_api_util_1.setAuthToken(false);
+  ele.style.display = "none";
+  document.getElementById('sessions-container').style.display = "flex";
+}
+},{"../util/session_api_util":"dist/frontend/util/session_api_util.js"}],"node_modules/jwt-decode/build/jwt-decode.esm.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.InvalidTokenError = n;
+exports.default = void 0;
+
+function e(e) {
+  this.message = e;
+}
+
+e.prototype = new Error(), e.prototype.name = "InvalidCharacterError";
+
+var r = "undefined" != typeof window && window.atob && window.atob.bind(window) || function (r) {
+  var t = String(r).replace(/=+$/, "");
+  if (t.length % 4 == 1) throw new e("'atob' failed: The string to be decoded is not correctly encoded.");
+
+  for (var n, o, a = 0, i = 0, c = ""; o = t.charAt(i++); ~o && (n = a % 4 ? 64 * n + o : o, a++ % 4) ? c += String.fromCharCode(255 & n >> (-2 * a & 6)) : 0) o = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".indexOf(o);
+
+  return c;
+};
+
+function t(e) {
+  var t = e.replace(/-/g, "+").replace(/_/g, "/");
+
+  switch (t.length % 4) {
+    case 0:
+      break;
+
+    case 2:
+      t += "==";
+      break;
+
+    case 3:
+      t += "=";
+      break;
+
+    default:
+      throw "Illegal base64url string!";
+  }
+
+  try {
+    return function (e) {
+      return decodeURIComponent(r(e).replace(/(.)/g, function (e, r) {
+        var t = r.charCodeAt(0).toString(16).toUpperCase();
+        return t.length < 2 && (t = "0" + t), "%" + t;
+      }));
+    }(t);
+  } catch (e) {
+    return r(t);
+  }
+}
+
+function n(e) {
+  this.message = e;
+}
+
+function o(e, r) {
+  if ("string" != typeof e) throw new n("Invalid token specified");
+  var o = !0 === (r = r || {}).header ? 0 : 1;
+
+  try {
+    return JSON.parse(t(e.split(".")[o]));
+  } catch (e) {
+    throw new n("Invalid token specified: " + e.message);
+  }
+}
+
+n.prototype = new Error(), n.prototype.name = "InvalidTokenError";
+var _default = o;
+exports.default = _default;
+},{}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.sessionCreator = void 0;
+
+var session_api_util_1 = require("../util/session_api_util");
+
+var home_1 = require("./home");
+
+var jwt_decode_1 = __importDefault(require("jwt-decode"));
 
 var sessionCreator = function sessionCreator(app) {
   //creates session container
@@ -2071,6 +2198,7 @@ var sessionCreator = function sessionCreator(app) {
   var password = document.createElement('input');
   password.classList.add('password-input', 'session-input');
   password.setAttribute('placeholder', 'Password');
+  password.setAttribute('type', 'password');
   var newAccount = document.createElement('span');
   newAccount.classList.add('create-account');
   newAccount.innerHTML = 'Create account instead';
@@ -2125,7 +2253,13 @@ var sessionCreator = function sessionCreator(app) {
   signin.onclick = function () {
     toggleForm('signup');
   };
+
+  loginBtn.onclick = function () {
+    signinUser();
+  };
 };
+
+exports.sessionCreator = sessionCreator;
 
 function toggleForm(field) {
   var login = document.getElementById('login-container');
@@ -2140,8 +2274,25 @@ function toggleForm(field) {
   }
 }
 
-exports.default = sessionCreator;
-},{}],"dist/frontend/scripts/main.js":[function(require,module,exports) {
+function signinUser() {
+  var un = document.getElementsByClassName('username-input')[0];
+  var pw = document.getElementsByClassName('password-input')[0];
+  var user = {
+    username: un.value,
+    password: pw.value
+  };
+  session_api_util_1.login(user).then(function (res) {
+    var token = res.data.token;
+    localStorage.setItem('jwtToken', token);
+    session_api_util_1.setAuthToken(token);
+    var decoded = jwt_decode_1.default(token);
+    console.log(decoded);
+    document.getElementById('sessions-container').style.display = "none";
+    var app = document.getElementById('application');
+    home_1.home(app);
+  });
+}
+},{"../util/session_api_util":"dist/frontend/util/session_api_util.js","./home":"dist/frontend/scripts/home.js","jwt-decode":"node_modules/jwt-decode/build/jwt-decode.esm.js"}],"dist/frontend/scripts/main.js":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -2158,26 +2309,33 @@ require("../../../reset.scss");
 
 require("../../../index.scss");
 
-var navbar_1 = require("./navbar");
+var navbar_1 = __importDefault(require("./navbar"));
 
 var session_api_util_1 = require("../util/session_api_util");
 
-var session_1 = __importDefault(require("./session"));
+var session_1 = require("./session");
+
+var home_1 = require("./home");
+
+function currentUser() {
+  return localStorage.jwtToken && localStorage.jwtToken !== 'undefined';
+}
 
 document.addEventListener("DOMContentLoaded", function () {
   var app = document.createElement('section');
   app.setAttribute('id', 'application');
   document.body.appendChild(app);
 
-  if (localStorage.jwtToken && localStorage.jwtToken !== 'undefined') {
+  if (currentUser()) {
     session_api_util_1.setAuthToken(localStorage.jwtToken);
-    navbar_1.loggedInNavbar(app);
+    navbar_1.default(app);
+    home_1.home(app);
   } else {
-    navbar_1.loggedOutNavbar(app);
-    session_1.default(app);
+    navbar_1.default(app);
+    session_1.sessionCreator(app);
   }
 });
-},{"../../../reset.scss":"reset.scss","../../../index.scss":"index.scss","./navbar":"dist/frontend/scripts/navbar.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./session":"dist/frontend/scripts/session.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../../../reset.scss":"reset.scss","../../../index.scss":"index.scss","./navbar":"dist/frontend/scripts/navbar.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./session":"dist/frontend/scripts/session.js","./home":"dist/frontend/scripts/home.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2205,7 +2363,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56403" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60453" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

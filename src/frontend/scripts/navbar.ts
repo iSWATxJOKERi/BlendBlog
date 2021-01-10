@@ -1,11 +1,4 @@
-export const loggedInNavbar = (app: HTMLElement) => {
-    //creates loggedin navbar
-    const navbar: HTMLElement = document.createElement('div');
-    navbar.classList.add('navbar');
-    app.appendChild(navbar);
-}
-
-export const loggedOutNavbar = (app: HTMLElement) => {
+const navbar = (app: HTMLElement) => {
     //creates loggedout navbar
     const navbar: HTMLElement = document.createElement('div');
     navbar.classList.add('navbar');
@@ -19,3 +12,5 @@ export const loggedOutNavbar = (app: HTMLElement) => {
     navbar.appendChild(logo);
     app.appendChild(navbar);
 }
+
+export default navbar;

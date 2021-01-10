@@ -3,8 +3,12 @@ import express, { Request, Response } from 'express';
 const app = express();
 import bodyParser from 'body-parser';
 import path from 'path';
-
+import passport from 'passport';
+import pass from './config/passport';
 import users from './routes/api/users';
+
+app.use(passport.initialize());
+pass(passport);
 app.use(express.static('dist'));
 app.get('/', (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, '../dist', 'index.html'))

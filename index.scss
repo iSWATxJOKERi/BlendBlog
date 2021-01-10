@@ -13,6 +13,7 @@ body {
     display: flex;
     height: 66px;
     background-color:#010011;
+    align-items: center;
 }
 
 .btn {
@@ -77,6 +78,15 @@ body {
     font-size: 14px;
 }
 
-.btn:hover, .create-account:hover, .signin:hover {
+.logout {
+    display: flex;
+    align-items: center;
+    padding: 5px 7px;
+    background-color: orangered;
+    height: 25px;
+    border-radius: 7px;
+}
+
+.btn:hover, .create-account:hover, .signin:hover, .logout:hover {
     cursor: pointer;
 }

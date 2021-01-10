@@ -4,6 +4,7 @@ import { QueryResult } from 'pg';
 import bcrypt from 'bcrypt';
 import jwt, { Secret } from 'jsonwebtoken';
 import { User } from '../models/User';
+import { setAuthToken } from '../frontend/util/session_api_util';
 
 export const getUsers = async (req: Request, res: Response): Promise<Response> => {
     try {
