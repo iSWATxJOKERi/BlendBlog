@@ -4,7 +4,7 @@
   "description": "## Overview 🤖",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js\" \"parcel index.html -p 3000\"",
+    "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js\" \"parcel watch index.html\"",
     "build": "tsc --watch",
     "test": "jest"
   },
