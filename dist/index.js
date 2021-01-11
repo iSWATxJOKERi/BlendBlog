@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
 const passport_1 = __importDefault(require("passport"));
 const passport_2 = __importDefault(require("./config/passport"));
 const users_1 = __importDefault(require("./routes/api/users"));
+const posts_1 = __importDefault(require("./routes/api/posts"));
 app.use(passport_1.default.initialize());
 passport_2.default(passport_1.default);
 app.use(express_1.default.static('dist'));
@@ -20,5 +21,6 @@ app.get('/', (req, res) => {
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use("/api", users_1.default);
+app.use("/api", posts_1.default);
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));

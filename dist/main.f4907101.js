@@ -2150,7 +2150,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.current_user = exports.clearInputs = void 0;
+exports.removeChildren = exports.removeParentAndChildren = exports.notice = exports.current_user = exports.clearInputs = void 0;
 
 var jwt_decode_1 = __importDefault(require("jwt-decode"));
 
@@ -2168,6 +2168,38 @@ var current_user = function current_user() {
 };
 
 exports.current_user = current_user;
+
+var notice = function notice(message) {
+  var app = document.getElementById('application');
+  var notify = document.createElement('span');
+  notify.setAttribute('id', 'notice');
+  notify.innerHTML = "".concat(message.success);
+  app.appendChild(notify);
+  var removeNotice = setTimeout(function () {
+    exports.removeParentAndChildren(notify);
+  }, 4500);
+  clearTimeout(removeNotice);
+};
+
+exports.notice = notice;
+
+var removeParentAndChildren = function removeParentAndChildren(element) {
+  while (element.lastChild) {
+    element.removeChild(element.lastChild);
+  }
+
+  element.remove();
+};
+
+exports.removeParentAndChildren = removeParentAndChildren;
+
+var removeChildren = function removeChildren(element) {
+  while (element.lastChild) {
+    element.removeChild(element.lastChild);
+  }
+};
+
+exports.removeChildren = removeChildren;
 },{"jwt-decode":"node_modules/jwt-decode/build/jwt-decode.esm.js"}],"dist/frontend/scripts/favorites.js":[function(require,module,exports) {
 "use strict";
 
@@ -2188,7 +2220,69 @@ var favorites = function favorites(parent) {
 };
 
 exports.favorites = favorites;
-},{}],"dist/frontend/scripts/feed.js":[function(require,module,exports) {
+},{}],"dist/frontend/util/post_api_util.js":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.deletePost = exports.updatePost = exports.createPost = exports.getPost = exports.getPosts = void 0;
+
+var axios_1 = __importDefault(require("axios"));
+
+var getPosts = function getPosts() {
+  return axios_1.default({
+    method: 'GET',
+    url: '/api/posts/all'
+  });
+};
+
+exports.getPosts = getPosts;
+
+var getPost = function getPost(id) {
+  return axios_1.default({
+    method: 'GET',
+    url: "/api/posts/".concat(id)
+  });
+};
+
+exports.getPost = getPost;
+
+var createPost = function createPost(post) {
+  return axios_1.default({
+    method: 'POST',
+    url: '/api/posts/create',
+    data: post
+  });
+};
+
+exports.createPost = createPost;
+
+var updatePost = function updatePost(id, post) {
+  return axios_1.default({
+    method: 'PATCH',
+    url: "/api/posts/".concat(id, "/update"),
+    data: post
+  });
+};
+
+exports.updatePost = updatePost;
+
+var deletePost = function deletePost(id) {
+  return axios_1.default({
+    method: 'DELETE',
+    url: "/api/posts/".concat(id, "/delete")
+  });
+};
+
+exports.deletePost = deletePost;
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/feed.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2198,17 +2292,24 @@ exports.mainfeed = void 0;
 
 var misc_util_1 = require("../util/misc_util");
 
+var post_api_util_1 = require("../util/post_api_util");
+
 var mainfeed = function mainfeed(parent) {
   var feed = document.createElement('div');
   feed.setAttribute('id', 'feed');
   var createPostBtn = document.createElement('span');
   createPostBtn.classList.add('create-post-btn');
-  createPostBtn.innerHTML = "&#x2795; Create Post"; //create modal
+  createPostBtn.innerHTML = "&#x2795; Create Post";
+  var allPosts = document.createElement('div');
+  allPosts.setAttribute('id', 'feed-of-posts'); //create modal
 
   createPostModal(parent); //appends to parent
 
   feed.appendChild(createPostBtn);
-  parent.appendChild(feed); //onclick to show modal and create post
+  feed.appendChild(allPosts);
+  parent.appendChild(feed); //display posts
+
+  displayPosts(allPosts); //onclick to show modal and create post
 
   createPostBtn.onclick = function () {
     toggleModal('show');
@@ -2260,8 +2361,52 @@ function createPostModal(parent) {
   modalChild.onclick = function (e) {
     e.stopPropagation();
   };
+
+  submitPost.onclick = function () {
+    submitThePost();
+  };
 }
-},{"../util/misc_util":"dist/frontend/util/misc_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
+
+function submitThePost() {
+  var ttl = document.getElementsByClassName('post-title')[0];
+  var bdy = document.getElementsByClassName('post-body')[0];
+  var b_id = misc_util_1.current_user();
+  var post = {
+    title: ttl.value,
+    body: bdy.value,
+    blogger_id: b_id.id,
+    valid: true
+  };
+  post_api_util_1.createPost(post).then(function (message) {
+    misc_util_1.notice(message);
+    var feedOfPosts = document.getElementById('feed-of-posts');
+    misc_util_1.removeChildren(feedOfPosts);
+    displayPosts(feedOfPosts);
+  });
+}
+
+function displayPosts(parent) {
+  post_api_util_1.getPosts().then(function (posts) {
+    for (var i = 0; i < posts.data.length; i++) {
+      var postItem = document.createElement('div');
+      postItem.classList.add('post-item');
+      var postTitle = document.createElement('h1');
+      postTitle.classList.add('post-title');
+      postTitle.innerHTML = "".concat(posts.data[i].title);
+      var postDetails = document.createElement('span');
+      postDetails.classList.add('post-details');
+      postDetails.innerHTML = "by ".concat(posts.data[i].blogger.username, " on ").concat(posts.data[i].created_at);
+      var postBody = document.createElement('p');
+      postBody.classList.add('post-body');
+      postBody.innerHTML = "".concat(posts.data[i].body);
+      postItem.appendChild(postTitle);
+      postItem.appendChild(postDetails);
+      postItem.appendChild(postBody);
+      parent.appendChild(postItem);
+    }
+  });
+}
+},{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/post_api_util":"dist/frontend/util/post_api_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2578,7 +2723,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49967" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52733" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
