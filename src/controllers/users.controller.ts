@@ -4,6 +4,7 @@ import { QueryResult } from 'pg';
 import bcrypt from 'bcrypt';
 import jwt, { Secret } from 'jsonwebtoken';
 import { User } from '../models/User';
+import { setAuthToken } from '../frontend/util/session_api_util';
 
 export const getUsers = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -44,7 +45,7 @@ export const createUser = async (req: Request, res: Response) => {
                     const secret = <Secret>process.env.SECRET_OR_KEY;
                     jwt.sign(payload, secret, { expiresIn: '365d' }, (err, token) => { return res.json({ success: true, token: 'Bearer ' + token })});
                 } catch (e) {
-                    return res.status(500).json('Internal Server Error');
+                    return res.status(500).json(e.detail);
                 }
             })
         })
