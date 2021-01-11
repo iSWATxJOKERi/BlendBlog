@@ -1,12 +1,13 @@
 import '../../../reset.scss';
 import '../../../index.scss';
+import '../../../main.scss';
 import navbar from "./navbar";
 import { setAuthToken } from '../util/session_api_util';
 import { sessionCreator } from './session';
 import { home } from './home';
 
 function currentUser() {
-    return localStorage.jwtToken && localStorage.jwtToken !== 'undefined'
+    return localStorage.jwtToken && localStorage.jwtToken !== 'undefined';
 }
 
 document.addEventListener("DOMContentLoaded", () => {

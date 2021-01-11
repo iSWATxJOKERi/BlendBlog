@@ -194,6 +194,11 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
+},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"main.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
 },{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"dist/frontend/scripts/navbar.js":[function(require,module,exports) {
 "use strict";
 
@@ -2060,57 +2065,7 @@ var setAuthToken = function setAuthToken(token) {
 };
 
 exports.setAuthToken = setAuthToken;
-},{"axios":"node_modules/axios/index.js"}],"dist/frontend/util/misc_util.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.clearInputs = void 0;
-
-var clearInputs = function clearInputs(elements) {
-  for (var i = 0; i < elements.length; i++) {
-    elements[i].value = "";
-  }
-};
-
-exports.clearInputs = clearInputs;
-},{}],"dist/frontend/scripts/home.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.home = void 0;
-
-var misc_util_1 = require("../util/misc_util");
-
-var session_api_util_1 = require("../util/session_api_util");
-
-var home = function home(app) {
-  var b1 = document.getElementsByClassName('session-input');
-  misc_util_1.clearInputs(b1);
-  var logout = document.createElement('span');
-  logout.classList.add('logout');
-  logout.innerHTML = 'Logout';
-  var navbar = document.getElementsByClassName('navbar')[0];
-  navbar.appendChild(logout);
-  navbar.style.padding = '0 25px 0 0';
-
-  logout.onclick = function () {
-    logUserOut(logout);
-  };
-};
-
-exports.home = home;
-
-function logUserOut(ele) {
-  localStorage.removeItem('jwtToken');
-  session_api_util_1.setAuthToken(false);
-  ele.style.display = "none";
-  document.getElementById('sessions-container').style.display = "flex";
-}
-},{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/session_api_util":"dist/frontend/util/session_api_util.js"}],"node_modules/jwt-decode/build/jwt-decode.esm.js":[function(require,module,exports) {
+},{"axios":"node_modules/axios/index.js"}],"node_modules/jwt-decode/build/jwt-decode.esm.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2183,7 +2138,213 @@ function o(e, r) {
 n.prototype = new Error(), n.prototype.name = "InvalidTokenError";
 var _default = o;
 exports.default = _default;
-},{}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
+},{}],"dist/frontend/util/misc_util.js":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.current_user = exports.clearInputs = void 0;
+
+var jwt_decode_1 = __importDefault(require("jwt-decode"));
+
+var clearInputs = function clearInputs(elements) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].value = "";
+  }
+};
+
+exports.clearInputs = clearInputs;
+
+var current_user = function current_user() {
+  var token = localStorage.getItem('jwtToken');
+  return jwt_decode_1.default(token);
+};
+
+exports.current_user = current_user;
+},{"jwt-decode":"node_modules/jwt-decode/build/jwt-decode.esm.js"}],"dist/frontend/scripts/favorites.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.favorites = void 0;
+
+var favorites = function favorites(parent) {
+  var favoritesContainer = document.createElement('div');
+  favoritesContainer.setAttribute('id', 'favorites-container');
+  var favoritesHeader = document.createElement('h2');
+  favoritesHeader.classList.add('favorites-header');
+  favoritesHeader.innerHTML = "Favorites &#x2764;"; //appends to parent
+
+  favoritesContainer.appendChild(favoritesHeader);
+  parent.appendChild(favoritesContainer);
+};
+
+exports.favorites = favorites;
+},{}],"dist/frontend/scripts/feed.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mainfeed = void 0;
+
+var misc_util_1 = require("../util/misc_util");
+
+var mainfeed = function mainfeed(parent) {
+  var feed = document.createElement('div');
+  feed.setAttribute('id', 'feed');
+  var createPostBtn = document.createElement('span');
+  createPostBtn.classList.add('create-post-btn');
+  createPostBtn.innerHTML = "&#x2795; Create Post"; //create modal
+
+  createPostModal(parent); //appends to parent
+
+  feed.appendChild(createPostBtn);
+  parent.appendChild(feed); //onclick to show modal and create post
+
+  createPostBtn.onclick = function () {
+    toggleModal('show');
+  };
+};
+
+exports.mainfeed = mainfeed;
+
+function toggleModal(type) {
+  var modal = document.getElementsByClassName('modal-background')[0];
+  var b1 = document.getElementsByClassName('post-input');
+  misc_util_1.clearInputs(b1);
+
+  if (type === 'show') {
+    modal.style.display = "flex";
+  } else {
+    modal.style.display = "none";
+  }
+}
+
+function createPostModal(parent) {
+  //create modal and child
+  var modalBackground = document.createElement('div');
+  modalBackground.classList.add('modal-background');
+  var modalChild = document.createElement('div');
+  modalChild.classList.add('modal-child'); //create post form
+
+  var postTitle = document.createElement('input');
+  postTitle.classList.add('post-title', 'post-input');
+  postTitle.setAttribute('placeholder', 'Title');
+  var postBody = document.createElement('textarea');
+  postBody.classList.add('post-body', 'post-input');
+  postBody.setAttribute('placeholder', 'Body');
+  var submitPost = document.createElement('span');
+  submitPost.classList.add('submit-post');
+  submitPost.innerHTML = "Submit Post"; //appends elements to parent to modal
+
+  modalChild.appendChild(postTitle);
+  modalChild.appendChild(postBody);
+  modalChild.appendChild(submitPost);
+  modalBackground.appendChild(modalChild);
+  modalBackground.style.display = "none";
+  parent.appendChild(modalBackground); //onclick to close modal
+
+  modalBackground.onclick = function () {
+    toggleModal('close');
+  };
+
+  modalChild.onclick = function (e) {
+    e.stopPropagation();
+  };
+}
+},{"../util/misc_util":"dist/frontend/util/misc_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.searchContainer = void 0;
+
+var searchContainer = function searchContainer(parent) {
+  //creates container
+  var search = document.createElement('div');
+  search.setAttribute('id', 'search'); //creates search input box and appends to container
+
+  var searchContainer = document.createElement('div');
+  searchContainer.classList.add('search-container');
+  var searchHeader = document.createElement('h2');
+  searchHeader.classList.add('search-header');
+  searchHeader.innerHTML = "Search";
+  var searchInput = document.createElement('input');
+  searchInput.classList.add('search-input');
+  searchInput.setAttribute('placeholder', 'Search for posts by date, title, etc...');
+  var searchBtn = document.createElement('span');
+  searchBtn.classList.add('search-btn');
+  searchBtn.innerHTML = "Search";
+  search.appendChild(searchHeader);
+  searchContainer.appendChild(searchInput);
+  searchContainer.appendChild(searchBtn); //appends to parent
+
+  search.appendChild(searchContainer);
+  parent.appendChild(search);
+};
+
+exports.searchContainer = searchContainer;
+},{}],"dist/frontend/scripts/home.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.home = void 0;
+
+var misc_util_1 = require("../util/misc_util");
+
+var session_api_util_1 = require("../util/session_api_util");
+
+var favorites_1 = require("./favorites");
+
+var feed_1 = require("./feed");
+
+var search_1 = require("./search");
+
+var home = function home(app) {
+  //clear inputs and add logout button to navbar
+  var b1 = document.getElementsByClassName('session-input');
+  misc_util_1.clearInputs(b1);
+  var logout = document.createElement('span');
+  logout.classList.add('logout');
+  logout.innerHTML = 'Logout';
+  var navbar = document.getElementsByClassName('navbar')[0];
+  navbar.appendChild(logout);
+  navbar.style.padding = '0 25px 0 0'; //create main section
+
+  var blog = document.createElement('section');
+  blog.classList.add('main-section');
+  search_1.searchContainer(blog);
+  feed_1.mainfeed(blog);
+  favorites_1.favorites(blog); //append elements to parent to application
+
+  app.appendChild(blog); //onclick for logging out 
+
+  logout.onclick = function () {
+    logUserOut(logout);
+  };
+};
+
+exports.home = home;
+
+function logUserOut(ele) {
+  localStorage.removeItem('jwtToken');
+  session_api_util_1.setAuthToken(false);
+  ele.style.display = "none";
+  document.getElementById('sessions-container').style.display = "flex";
+}
+},{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./favorites":"dist/frontend/scripts/favorites.js","./feed":"dist/frontend/scripts/feed.js","./search":"dist/frontend/scripts/search.js"}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -2361,6 +2522,8 @@ require("../../../reset.scss");
 
 require("../../../index.scss");
 
+require("../../../main.scss");
+
 var navbar_1 = __importDefault(require("./navbar"));
 
 var session_api_util_1 = require("../util/session_api_util");
@@ -2387,7 +2550,7 @@ document.addEventListener("DOMContentLoaded", function () {
     session_1.sessionCreator(app);
   }
 });
-},{"../../../reset.scss":"reset.scss","../../../index.scss":"index.scss","./navbar":"dist/frontend/scripts/navbar.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./session":"dist/frontend/scripts/session.js","./home":"dist/frontend/scripts/home.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../../../reset.scss":"reset.scss","../../../index.scss":"index.scss","../../../main.scss":"main.scss","./navbar":"dist/frontend/scripts/navbar.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./session":"dist/frontend/scripts/session.js","./home":"dist/frontend/scripts/home.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2415,7 +2578,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60453" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63493" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

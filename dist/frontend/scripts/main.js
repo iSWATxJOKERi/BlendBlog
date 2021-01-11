@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("../../../reset.scss");
 require("../../../index.scss");
+require("../../../main.scss");
 const navbar_1 = __importDefault(require("./navbar"));
 const session_api_util_1 = require("../util/session_api_util");
 const session_1 = require("./session");

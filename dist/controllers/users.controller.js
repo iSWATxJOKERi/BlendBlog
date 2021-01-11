@@ -61,7 +61,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     jsonwebtoken_1.default.sign(payload, secret, { expiresIn: '365d' }, (err, token) => { return res.json({ success: true, token: 'Bearer ' + token }); });
                 }
                 catch (e) {
-                    return res.status(500).json('Internal Server Error');
+                    return res.status(500).json(e.detail);
                 }
             }));
         });
