@@ -2176,19 +2176,19 @@ var notice = function notice(message) {
   notify.innerHTML = "".concat(message.success);
   app.appendChild(notify);
   var removeNotice = setTimeout(function () {
-    exports.removeParentAndChildren(notify);
+    exports.removeParentAndChildren(notify, removeNotice);
   }, 4500);
-  clearTimeout(removeNotice);
 };
 
 exports.notice = notice;
 
-var removeParentAndChildren = function removeParentAndChildren(element) {
+var removeParentAndChildren = function removeParentAndChildren(element, id) {
   while (element.lastChild) {
     element.removeChild(element.lastChild);
   }
 
   element.remove();
+  clearTimeout(id);
 };
 
 exports.removeParentAndChildren = removeParentAndChildren;
@@ -2766,7 +2766,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52733" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54916" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

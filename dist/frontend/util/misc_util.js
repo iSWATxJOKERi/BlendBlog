@@ -23,16 +23,16 @@ const notice = (message) => {
     notify.innerHTML = `${message.success}`;
     app.appendChild(notify);
     const removeNotice = setTimeout(() => {
-        exports.removeParentAndChildren(notify);
+        exports.removeParentAndChildren(notify, removeNotice);
     }, 4500);
-    clearTimeout(removeNotice);
 };
 exports.notice = notice;
-const removeParentAndChildren = (element) => {
+const removeParentAndChildren = (element, id) => {
     while (element.lastChild) {
         element.removeChild(element.lastChild);
     }
     element.remove();
+    clearTimeout(id);
 };
 exports.removeParentAndChildren = removeParentAndChildren;
 const removeChildren = (element) => {
