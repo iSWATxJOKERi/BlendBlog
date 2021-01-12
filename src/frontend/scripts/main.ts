@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(currentUser()) {
         setAuthToken(localStorage.jwtToken);
         navbar(app);
+        sessionCreator(app);
+        document.getElementById('sessions-container')!.style.display = "none";
         home(app);
     } else {
         navbar(app);

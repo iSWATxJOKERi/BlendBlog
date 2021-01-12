@@ -14,6 +14,8 @@ body {
     height: 66px;
     background-color:#010011;
     align-items: center;
+    position: fixed;
+    width: 100%;
 }
 
 .btn {
@@ -36,7 +38,7 @@ body {
 #sessions-container {
     display: flex;
     justify-content: center;
-    padding-top: 20px;
+    padding-top: 100px;
 }
 
 #login-container {
@@ -85,6 +87,7 @@ body {
     background-color: orangered;
     height: 25px;
     border-radius: 7px;
+    margin-right: 10px;
 }
 
 .btn:hover, .create-account:hover, .signin:hover, .logout:hover {

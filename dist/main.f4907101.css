@@ -61,7 +61,9 @@ body {
   display: flex;
   height: 66px;
   background-color: #010011;
-  align-items: center; }
+  align-items: center;
+  position: fixed;
+  width: 100%; }
 
 .btn {
   padding: 5px 7px;
@@ -81,7 +83,7 @@ body {
 #sessions-container {
   display: flex;
   justify-content: center;
-  padding-top: 20px; }
+  padding-top: 100px; }
 
 #login-container {
   display: flex;
@@ -123,14 +125,23 @@ body {
   padding: 5px 7px;
   background-color: orangered;
   height: 25px;
-  border-radius: 7px; }
+  border-radius: 7px;
+  margin-right: 10px; }
 
 .btn:hover, .create-account:hover, .signin:hover, .logout:hover {
   cursor: pointer; }
 
 .main-section {
   display: flex;
-  padding-top: 30px; }
+  padding-top: 110px; }
+
+#notice {
+  background-color: #2b20b2;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px; }
 
 #search {
   width: 25%; }
@@ -238,7 +249,43 @@ body {
   font-size: 14px;
   width: 90%; }
 
-.create-post-btn:hover, .search-btn:hover, .submit-post:hover {
+#feed-of-posts {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  margin-top: 20px; }
+
+.posttitle {
+  font-size: 30px; }
+
+.postdetails {
+  padding-bottom: 10px;
+  border-bottom: 1px solid silver;
+  margin-bottom: 10px; }
+
+.post-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid silver;
+  border-radius: 7px;
+  margin-bottom: 20px; }
+
+.postbody {
+  max-height: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+.favorite-post {
+  margin-top: 5px;
+  align-self: end;
+  font-size: 20px;
+  width: 25px;
+  display: flex;
+  justify-content: center; }
+
+.create-post-btn:hover, .search-btn:hover, .submit-post:hover, .favorite-post:hover {
   cursor: pointer; }
 
 

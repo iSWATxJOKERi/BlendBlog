@@ -3,6 +3,7 @@ import { setAuthToken } from "../util/session_api_util";
 import { favorites } from "./favorites";
 import { mainfeed } from "./feed";
 import { searchContainer } from "./search";
+import { sessionCreator } from "./session";
 
 export const home = (app: HTMLElement) => {
     //clear inputs and add logout button to navbar
@@ -26,12 +27,15 @@ export const home = (app: HTMLElement) => {
     app.appendChild(blog);
 
     //onclick for logging out 
-    logout.onclick = () => { logUserOut(logout) }
+    logout.onclick = () => { logUserOut(logout, app, blog) }
 }
 
-function logUserOut(ele: HTMLElement) {
+function logUserOut(ele: HTMLElement, app: HTMLElement, main: HTMLElement) {
     localStorage.removeItem('jwtToken');
     setAuthToken(false);
     ele.style.display = "none";
+    main.style.display = "none";
+
+    // sessionCreator(app);
     document.getElementById('sessions-container')!.style.display = "flex";
 }

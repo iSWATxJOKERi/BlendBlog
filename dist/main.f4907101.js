@@ -2150,7 +2150,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.current_user = exports.clearInputs = void 0;
+exports.removeChildren = exports.removeParentAndChildren = exports.notice = exports.current_user = exports.clearInputs = void 0;
 
 var jwt_decode_1 = __importDefault(require("jwt-decode"));
 
@@ -2168,6 +2168,38 @@ var current_user = function current_user() {
 };
 
 exports.current_user = current_user;
+
+var notice = function notice(message) {
+  var app = document.getElementById('application');
+  var notify = document.createElement('span');
+  notify.setAttribute('id', 'notice');
+  notify.innerHTML = "".concat(message.success);
+  app.appendChild(notify);
+  var removeNotice = setTimeout(function () {
+    exports.removeParentAndChildren(notify, removeNotice);
+  }, 4500);
+};
+
+exports.notice = notice;
+
+var removeParentAndChildren = function removeParentAndChildren(element, id) {
+  while (element.lastChild) {
+    element.removeChild(element.lastChild);
+  }
+
+  element.remove();
+  clearTimeout(id);
+};
+
+exports.removeParentAndChildren = removeParentAndChildren;
+
+var removeChildren = function removeChildren(element) {
+  while (element.lastChild) {
+    element.removeChild(element.lastChild);
+  }
+};
+
+exports.removeChildren = removeChildren;
 },{"jwt-decode":"node_modules/jwt-decode/build/jwt-decode.esm.js"}],"dist/frontend/scripts/favorites.js":[function(require,module,exports) {
 "use strict";
 
@@ -2188,7 +2220,112 @@ var favorites = function favorites(parent) {
 };
 
 exports.favorites = favorites;
-},{}],"dist/frontend/scripts/feed.js":[function(require,module,exports) {
+},{}],"dist/frontend/util/favorite_api_util.js":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.deleteFavorite = exports.createFavorite = void 0;
+
+var axios_1 = __importDefault(require("axios"));
+
+var createFavorite = function createFavorite(post_id, favoritee_id, favoriter_id) {
+  return axios_1.default({
+    method: 'post',
+    url: '/api/favorites/create',
+    data: {
+      post_id: post_id,
+      favoritee_id: favoritee_id,
+      favoriter_id: favoriter_id
+    }
+  });
+};
+
+exports.createFavorite = createFavorite;
+
+var deleteFavorite = function deleteFavorite(post_id, favoritee_id, favoriter_id) {
+  return axios_1.default({
+    method: 'delete',
+    url: '/api/favorites/delete',
+    data: {
+      post_id: post_id,
+      favoritee_id: favoritee_id,
+      favoriter_id: favoriter_id
+    }
+  });
+};
+
+exports.deleteFavorite = deleteFavorite;
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/util/post_api_util.js":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.deletePost = exports.updatePost = exports.createPost = exports.getPost = exports.getPosts = void 0;
+
+var axios_1 = __importDefault(require("axios"));
+
+var getPosts = function getPosts(cu) {
+  return axios_1.default({
+    method: 'GET',
+    url: "/api/posts/".concat(cu, "/all")
+  });
+};
+
+exports.getPosts = getPosts;
+
+var getPost = function getPost(id) {
+  return axios_1.default({
+    method: 'GET',
+    url: "/api/posts/".concat(id)
+  });
+};
+
+exports.getPost = getPost;
+
+var createPost = function createPost(post) {
+  return axios_1.default({
+    method: 'POST',
+    url: '/api/posts/create',
+    data: post
+  });
+};
+
+exports.createPost = createPost;
+
+var updatePost = function updatePost(id, post) {
+  return axios_1.default({
+    method: 'PATCH',
+    url: "/api/posts/".concat(id, "/update"),
+    data: post
+  });
+};
+
+exports.updatePost = updatePost;
+
+var deletePost = function deletePost(id) {
+  return axios_1.default({
+    method: 'DELETE',
+    url: "/api/posts/".concat(id, "/delete")
+  });
+};
+
+exports.deletePost = deletePost;
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/scripts/feed.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2196,19 +2333,28 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.mainfeed = void 0;
 
+var favorite_api_util_1 = require("../util/favorite_api_util");
+
 var misc_util_1 = require("../util/misc_util");
+
+var post_api_util_1 = require("../util/post_api_util");
 
 var mainfeed = function mainfeed(parent) {
   var feed = document.createElement('div');
   feed.setAttribute('id', 'feed');
   var createPostBtn = document.createElement('span');
   createPostBtn.classList.add('create-post-btn');
-  createPostBtn.innerHTML = "&#x2795; Create Post"; //create modal
+  createPostBtn.innerHTML = "&#x2795; Create Post";
+  var allPosts = document.createElement('div');
+  allPosts.setAttribute('id', 'feed-of-posts'); //create modal
 
   createPostModal(parent); //appends to parent
 
   feed.appendChild(createPostBtn);
-  parent.appendChild(feed); //onclick to show modal and create post
+  feed.appendChild(allPosts);
+  parent.appendChild(feed); //display posts
+
+  displayPosts(allPosts); //onclick to show modal and create post
 
   createPostBtn.onclick = function () {
     toggleModal('show');
@@ -2260,8 +2406,130 @@ function createPostModal(parent) {
   modalChild.onclick = function (e) {
     e.stopPropagation();
   };
+
+  submitPost.onclick = function () {
+    submitThePost();
+  };
 }
-},{"../util/misc_util":"dist/frontend/util/misc_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
+
+function submitThePost() {
+  var ttl = document.getElementsByClassName('post-title')[0];
+  var bdy = document.getElementsByClassName('post-body')[0];
+  var b_id = misc_util_1.current_user();
+  var post = {
+    title: ttl.value,
+    body: bdy.value,
+    blogger_id: b_id.id,
+    valid: true
+  };
+  post_api_util_1.createPost(post).then(function (message) {
+    toggleModal('close');
+    misc_util_1.notice(message);
+    var feedOfPosts = document.getElementById('feed-of-posts');
+    misc_util_1.removeChildren(feedOfPosts);
+    displayPosts(feedOfPosts);
+  });
+}
+
+function displayPosts(parent) {
+  var cu = misc_util_1.current_user();
+  post_api_util_1.getPosts(cu.id).then(function (posts) {
+    var _loop = function _loop(i) {
+      var postItem = document.createElement('div');
+      postItem.classList.add('post-item');
+      postItem.setAttribute('id', "postid-".concat(posts.data[i].id, "_creatorid-").concat(posts.data[i].blogger.id));
+      var postTitle = document.createElement('h1');
+      postTitle.classList.add('posttitle');
+      postTitle.innerHTML = "".concat(posts.data[i].title);
+      var postDetails = document.createElement('span');
+      postDetails.classList.add('postdetails');
+      postDetails.innerHTML = "by ".concat(posts.data[i].blogger.username, " on ").concat(posts.data[i].created_at);
+      var postBody = document.createElement('p');
+      postBody.classList.add('postbody');
+      postBody.innerHTML = "".concat(posts.data[i].body);
+      var favorite = document.createElement('span');
+      favorite.classList.add('favorite-post');
+      favorite.innerHTML = "<i class=\"far fa-heart\"></i>";
+
+      if (posts.data[i].favorited) {
+        var heart = favorite.getElementsByClassName('fa-heart')[0];
+        heart.style.color = 'red';
+      }
+
+      postItem.appendChild(postTitle);
+      postItem.appendChild(postDetails);
+      postItem.appendChild(postBody);
+      postItem.appendChild(favorite);
+      parent.appendChild(postItem);
+
+      postItem.onclick = function () {
+        expandPost(postItem);
+      };
+
+      postTitle.onclick = function (e) {
+        e.stopPropagation();
+      };
+
+      postDetails.onclick = function (e) {
+        e.stopPropagation();
+      };
+
+      postBody.onclick = function (e) {
+        e.stopPropagation();
+      };
+
+      favorite.onclick = function (e) {
+        if (posts.data[i].favorited) {
+          removeFavorite(e, postItem);
+        } else {
+          makeFavorite(e, postItem);
+        }
+      };
+    };
+
+    for (var i = 0; i < posts.data.length; i++) {
+      _loop(i);
+    }
+  });
+}
+
+function expandPost(item) {
+  // console.log("in");
+  var body = item.getElementsByClassName('postbody')[0];
+
+  if (body.style.maxHeight === "none") {
+    body.style.maxHeight = "150px";
+    body.style.whiteSpace = "nowrap";
+  } else {
+    body.style.maxHeight = "none";
+    body.style.whiteSpace = "normal";
+  }
+}
+
+function makeFavorite(e, post) {
+  e.stopPropagation();
+  var post_id = post.id.split("_")[0].split("-")[1];
+  var favoriter_id = misc_util_1.current_user();
+  var favoritee_id = post.id.split("_")[1].split("-")[1];
+  favorite_api_util_1.createFavorite(post_id, favoritee_id, favoriter_id.id).then(function () {
+    var feedOfPosts = document.getElementById('feed-of-posts');
+    misc_util_1.removeChildren(feedOfPosts);
+    displayPosts(feedOfPosts);
+  });
+}
+
+function removeFavorite(e, post) {
+  e.stopPropagation();
+  var post_id = post.id.split("_")[0].split("-")[1];
+  var favoriter_id = misc_util_1.current_user();
+  var favoritee_id = post.id.split("_")[1].split("-")[1];
+  favorite_api_util_1.deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(function () {
+    var feedOfPosts = document.getElementById('feed-of-posts');
+    misc_util_1.removeChildren(feedOfPosts);
+    displayPosts(feedOfPosts);
+  });
+}
+},{"../util/favorite_api_util":"dist/frontend/util/favorite_api_util.js","../util/misc_util":"dist/frontend/util/misc_util.js","../util/post_api_util":"dist/frontend/util/post_api_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2332,16 +2600,18 @@ var home = function home(app) {
   app.appendChild(blog); //onclick for logging out 
 
   logout.onclick = function () {
-    logUserOut(logout);
+    logUserOut(logout, app, blog);
   };
 };
 
 exports.home = home;
 
-function logUserOut(ele) {
+function logUserOut(ele, app, main) {
   localStorage.removeItem('jwtToken');
   session_api_util_1.setAuthToken(false);
   ele.style.display = "none";
+  main.style.display = "none"; // sessionCreator(app);
+
   document.getElementById('sessions-container').style.display = "flex";
 }
 },{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./favorites":"dist/frontend/scripts/favorites.js","./feed":"dist/frontend/scripts/feed.js","./search":"dist/frontend/scripts/search.js"}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
@@ -2544,6 +2814,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (currentUser()) {
     session_api_util_1.setAuthToken(localStorage.jwtToken);
     navbar_1.default(app);
+    session_1.sessionCreator(app);
+    document.getElementById('sessions-container').style.display = "none";
     home_1.home(app);
   } else {
     navbar_1.default(app);

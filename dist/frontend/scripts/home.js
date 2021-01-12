@@ -25,12 +25,14 @@ const home = (app) => {
     //append elements to parent to application
     app.appendChild(blog);
     //onclick for logging out 
-    logout.onclick = () => { logUserOut(logout); };
+    logout.onclick = () => { logUserOut(logout, app, blog); };
 };
 exports.home = home;
-function logUserOut(ele) {
+function logUserOut(ele, app, main) {
     localStorage.removeItem('jwtToken');
     session_api_util_1.setAuthToken(false);
     ele.style.display = "none";
+    main.style.display = "none";
+    // sessionCreator(app);
     document.getElementById('sessions-container').style.display = "flex";
 }
