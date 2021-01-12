@@ -1,4 +1,3 @@
-import { current_user } from "../frontend/util/misc_util";
 import { Favorite } from "../models/Favorite";
 import { User } from "../models/User";
 
