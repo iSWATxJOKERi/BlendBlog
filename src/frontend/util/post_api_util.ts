@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PostRequest } from '../../validation/post';
 
-export const getPosts = (cu: any) => {
+export const getPosts = (cu: any): any => {
     return axios({
         method: 'GET',
         url: `/api/posts/${ cu }/all`

@@ -23,3 +23,10 @@ export const deleteFavorite = (post_id: string | number, favoritee_id: string | 
         }
     })
 }
+
+export const getFavoritePosts = (id: number | string) => {
+    return axios({
+        method: 'get',
+        url: `/api/favorites/${ id }/posts`
+    })
+}

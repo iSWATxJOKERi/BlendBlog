@@ -64,6 +64,7 @@
     font-size: 20px;
     display: flex;
     justify-content: center;
+    margin-bottom: 20px;
 }
 
 .create-post-btn {
@@ -156,6 +157,7 @@
     border: 1px solid silver;
     border-radius: 7px;
     margin-bottom: 20px;
+    background-color: #010011;
 }
 
 .postbody {
@@ -172,6 +174,17 @@
     width: 25px;
     display: flex;
     justify-content: center;
+}
+
+.favorite-post-item {
+    display: flex;
+    flex-direction: column;
+    padding: 7px;
+    border: 1px solid silver;
+    width: 430px;
+    border-radius: 7px;
+    background-color: #010011;
+    margin-bottom: 7px;
 }
 
 .create-post-btn:hover, .search-btn:hover, .submit-post:hover, .favorite-post:hover {

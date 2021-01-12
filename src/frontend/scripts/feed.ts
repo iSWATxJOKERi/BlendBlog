@@ -79,7 +79,7 @@ function submitThePost() {
         blogger_id: b_id.id as number,
         valid: true
     }
-    createPost(post).then(message => {
+    createPost(post).then((message: any) => {
         toggleModal('close');
         notice(message);
         const feedOfPosts = document.getElementById('feed-of-posts')!;
@@ -90,7 +90,7 @@ function submitThePost() {
 
 function displayPosts(parent: HTMLElement) {
     let cu = current_user() as any;
-    getPosts(cu.id).then(posts => {
+    getPosts(cu.id).then((posts: any) => {
         for(let i: number = 0; i < posts.data.length; i++) {
             const postItem: HTMLElement = document.createElement('div');
             postItem.classList.add('post-item');

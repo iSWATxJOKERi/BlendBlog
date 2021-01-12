@@ -1,5 +1,6 @@
 import { pool } from "../database";
 import { Request, Response } from 'express';
+import { userFavoritesView } from "../views/user_views";
 
 export const createFavorite = async (req: Request, res: Response) => {
     const { post_id, favoriter_id, favoritee_id } = req.body;
@@ -16,6 +17,16 @@ export const deleteFavorite = async (req: Request, res: Response) => {
     try {
         await pool.query('DELETE FROM favorites WHERE post_id = $1 AND favoriter_id = $2 AND favoritee_id = $3', [post_id, favoriter_id, favoritee_id]);
         return res.status(200).json({ success: 'Favorite removed succesfully!'});
+    } catch (e) {
+        return res.status(500).json(e.stack);
+    }
+}
+
+export const favoritePosts = async (req: Request, res: Response) => {
+    const current_user = parseInt(req.params.id);
+    try {
+        let result = await userFavoritesView(current_user);
+        return res.status(200).json(result);
     } catch (e) {
         return res.status(500).json(e.stack);
     }

@@ -1,7 +1,7 @@
 import { Favorite } from "../models/Favorite";
 import { User } from "../models/User";
 
-export const postsIndexView = async (arr: any[], cu: any) => {
+export const postsIndexView = async (arr: any[], cu: number | string) => {
     let result = [];
     for(let i: number = 0; i < arr.length; i++) {
         const fav = await <any>Favorite.findBy({ post_id: arr[i].id, favoriter_id: cu, favoritee_id: arr[i].blogger_id });
