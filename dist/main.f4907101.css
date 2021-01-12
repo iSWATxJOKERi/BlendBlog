@@ -246,7 +246,43 @@ body {
   font-size: 14px;
   width: 90%; }
 
-.create-post-btn:hover, .search-btn:hover, .submit-post:hover {
+#feed-of-posts {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  margin-top: 20px; }
+
+.posttitle {
+  font-size: 30px; }
+
+.postdetails {
+  padding-bottom: 10px;
+  border-bottom: 1px solid silver;
+  margin-bottom: 10px; }
+
+.post-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid silver;
+  border-radius: 7px;
+  margin-bottom: 20px; }
+
+.postbody {
+  max-height: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+.favorite-post {
+  margin-top: 5px;
+  align-self: end;
+  font-size: 20px;
+  width: 25px;
+  display: flex;
+  justify-content: center; }
+
+.create-post-btn:hover, .search-btn:hover, .submit-post:hover, .favorite-post:hover {
   cursor: pointer; }
 
 

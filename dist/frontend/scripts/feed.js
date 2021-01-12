@@ -73,6 +73,7 @@ function submitThePost() {
         valid: true
     };
     post_api_util_1.createPost(post).then(message => {
+        toggleModal('close');
         misc_util_1.notice(message);
         const feedOfPosts = document.getElementById('feed-of-posts');
         misc_util_1.removeChildren(feedOfPosts);
@@ -85,18 +86,40 @@ function displayPosts(parent) {
             const postItem = document.createElement('div');
             postItem.classList.add('post-item');
             const postTitle = document.createElement('h1');
-            postTitle.classList.add('post-title');
+            postTitle.classList.add('posttitle');
             postTitle.innerHTML = `${posts.data[i].title}`;
             const postDetails = document.createElement('span');
-            postDetails.classList.add('post-details');
+            postDetails.classList.add('postdetails');
             postDetails.innerHTML = `by ${posts.data[i].blogger.username} on ${posts.data[i].created_at}`;
             const postBody = document.createElement('p');
-            postBody.classList.add('post-body');
+            postBody.classList.add('postbody');
             postBody.innerHTML = `${posts.data[i].body}`;
+            const favorite = document.createElement('span');
+            favorite.classList.add('favorite-post');
+            favorite.innerHTML = `<i class="far fa-heart"></i>`;
             postItem.appendChild(postTitle);
             postItem.appendChild(postDetails);
             postItem.appendChild(postBody);
+            postItem.appendChild(favorite);
             parent.appendChild(postItem);
+            postItem.onclick = () => { expandPost(postItem); };
+            postTitle.onclick = (e) => { e.stopPropagation(); };
+            postDetails.onclick = (e) => { e.stopPropagation(); };
+            postBody.onclick = (e) => { e.stopPropagation(); };
+            favorite.onclick = (e) => { e.stopPropagation(); };
         }
     });
+}
+function expandPost(item) {
+    // console.log("in");
+    const body = item.getElementsByClassName('postbody')[0];
+    console.log(body);
+    if (body.style.maxHeight === "none") {
+        body.style.maxHeight = "150px";
+        body.style.whiteSpace = "nowrap";
+    }
+    else {
+        body.style.maxHeight = "none";
+        body.style.whiteSpace = "normal";
+    }
 }
