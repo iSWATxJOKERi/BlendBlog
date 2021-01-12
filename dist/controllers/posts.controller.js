@@ -16,7 +16,7 @@ const post_views_1 = require("../views/post_views");
 const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield Post_1.Post.find();
-        const result = yield post_views_1.postsIndexView(response.rows);
+        const result = yield post_views_1.postsIndexView(response.rows, req.params.cu);
         return res.status(200).json(result);
     }
     catch (e) {

@@ -17,7 +17,7 @@ class Favorite {
     static findBy(category = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             let arr = Object.keys(category);
-            let queries = `SELECT * FROM favorites WHERE ${arr[0]} LIKE $1`;
+            let queries = `SELECT * FROM favorites WHERE ${arr[0]} = $1`;
             let parameters = [category[arr[0]]];
             for (let i = 1; i < arr.length; i++) {
                 queries += (' AND ' + arr[i] + ` = $${i + 1}`);
@@ -31,6 +31,8 @@ class Favorite {
                     parameters.push(category.favoritee_id);
                 }
             }
+            // console.log(queries);
+            // console.log(parameters);
             const result = yield database_1.pool.query(queries, parameters);
             return result;
         });

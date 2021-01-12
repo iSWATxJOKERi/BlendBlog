@@ -27,7 +27,7 @@ class Post {
             let queries = `SELECT * FROM posts WHERE ${arr[0]} LIKE $1`;
             let parameters = [category[arr[0]]];
             for (let i = 1; i < arr.length; i++) {
-                queries += (' AND ' + arr[i] + ` = $${i + 1}`);
+                queries += (' AND ' + arr[i] + ` LIKE $${i + 1}`);
                 if (arr[i] === "title") {
                     parameters.push(category.title);
                 }

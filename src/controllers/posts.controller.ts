@@ -7,7 +7,7 @@ import { postsIndexView, postShowView } from '../views/post_views';
 export const getPosts = async (req: Request, res: Response): Promise<Response> => {
     try {
         const response: QueryResult = await Post.find();
-        const result = await postsIndexView(response.rows);
+        const result = await postsIndexView(response.rows, req.params.cu);
         return res.status(200).json(result);
     } catch (e) {
         return res.status(500).json(e.stack);

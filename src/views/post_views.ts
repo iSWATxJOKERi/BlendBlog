@@ -1,10 +1,14 @@
+import { current_user } from "../frontend/util/misc_util";
+import { Favorite } from "../models/Favorite";
 import { User } from "../models/User";
 
-export const postsIndexView = async (arr: any[]) => {
+export const postsIndexView = async (arr: any[], cu: any) => {
     let result = [];
     for(let i: number = 0; i < arr.length; i++) {
+        const fav = await <any>Favorite.findBy({ post_id: arr[i].id, favoriter_id: cu, favoritee_id: arr[i].blogger_id });
+        const favorited = fav.rows.length > 0 ? true : false;
         const user =  await <any>User.findById(arr[i].blogger_id);
-        result.push(Object.assign({ blogger: user.rows[0] }, arr[i]))
+        result.push(Object.assign({ favorited, blogger: user.rows[0] }, arr[i]))
     }
     return result;
 }

@@ -7,7 +7,7 @@ export class Favorite {
 
     static async findBy(category: any = {}) {
         let arr: string[] = Object.keys(category);
-        let queries: string = `SELECT * FROM favorites WHERE ${ arr[0] } LIKE $1`;
+        let queries: string = `SELECT * FROM favorites WHERE ${ arr[0] } = $1`;
         let parameters: any[] = [category[arr[0]]];
         for(let i: number = 1; i < arr.length; i++) {
             queries += (' AND ' + arr[i] + ` = $${ i + 1 }`);
@@ -19,6 +19,8 @@ export class Favorite {
                 parameters.push(category.favoritee_id)
             }
         }
+        // console.log(queries);
+        // console.log(parameters);
         const result: QueryResult = await pool.query(queries, parameters);
         return result;
     }

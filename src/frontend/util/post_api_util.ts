@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { PostRequest } from '../../validation/post';
 
-export const getPosts = () => {
+export const getPosts = (cu: any) => {
     return axios({
         method: 'GET',
-        url: '/api/posts/all'
+        url: `/api/posts/${ cu }/all`
     })
 }
 

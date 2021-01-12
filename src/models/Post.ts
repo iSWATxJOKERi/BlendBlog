@@ -16,7 +16,7 @@ export class Post {
         let queries: string = `SELECT * FROM posts WHERE ${ arr[0] } LIKE $1`;
         let parameters: any[] = [category[arr[0]]];
         for(let i: number = 1; i < arr.length; i++) {
-            queries += (' AND ' + arr[i] + ` = $${ i + 1 }`);
+            queries += (' AND ' + arr[i] + ` LIKE $${ i + 1 }`);
             if(arr[i] === "title") {
                 parameters.push(category.title)
             } else if(arr[i] === "date") {

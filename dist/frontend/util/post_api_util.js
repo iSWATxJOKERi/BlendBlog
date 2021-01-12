@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePost = exports.updatePost = exports.createPost = exports.getPost = exports.getPosts = void 0;
 const axios_1 = __importDefault(require("axios"));
-const getPosts = () => {
+const getPosts = (cu) => {
     return axios_1.default({
         method: 'GET',
-        url: '/api/posts/all'
+        url: `/api/posts/${cu}/all`
     });
 };
 exports.getPosts = getPosts;

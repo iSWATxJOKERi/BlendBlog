@@ -1,3 +1,4 @@
+import { createFavorite, deleteFavorite } from "../util/favorite_api_util";
 import { clearInputs, current_user, notice, removeChildren } from "../util/misc_util";
 import { createPost, getPosts } from "../util/post_api_util";
 
@@ -88,10 +89,12 @@ function submitThePost() {
 }
 
 function displayPosts(parent: HTMLElement) {
-    getPosts().then(posts => {
+    let cu = current_user() as any;
+    getPosts(cu.id).then(posts => {
         for(let i: number = 0; i < posts.data.length; i++) {
             const postItem: HTMLElement = document.createElement('div');
             postItem.classList.add('post-item');
+            postItem.setAttribute('id', `postid-${ posts.data[i].id }_creatorid-${ posts.data[i].blogger.id }`);
             const postTitle: HTMLElement = document.createElement('h1');
             postTitle.classList.add('posttitle');
             postTitle.innerHTML = `${ posts.data[i].title }`;
@@ -104,6 +107,10 @@ function displayPosts(parent: HTMLElement) {
             const favorite: HTMLElement = document.createElement('span');
             favorite.classList.add('favorite-post');
             favorite.innerHTML = `<i class="far fa-heart"></i>`;
+            if(posts.data[i].favorited) {
+                let heart = favorite.getElementsByClassName('fa-heart')[0] as HTMLElement;
+                heart.style.color = 'red';
+            }
 
             postItem.appendChild(postTitle);
             postItem.appendChild(postDetails);
@@ -115,7 +122,13 @@ function displayPosts(parent: HTMLElement) {
             postTitle.onclick = (e) => { e.stopPropagation() };
             postDetails.onclick = (e) => { e.stopPropagation() };
             postBody.onclick = (e) => { e.stopPropagation() };
-            favorite.onclick = (e) => { e.stopPropagation() };
+            favorite.onclick = (e) => { 
+                if(posts.data[i].favorited) {
+                    removeFavorite(e, postItem);
+                } else {
+                    makeFavorite(e, postItem);
+                }
+            };
         }
     })
 }
@@ -123,7 +136,6 @@ function displayPosts(parent: HTMLElement) {
 function expandPost(item: HTMLElement) {
     // console.log("in");
     const body = item.getElementsByClassName('postbody')[0] as HTMLElement;
-    console.log(body);
     if(body.style.maxHeight === "none") {
         body.style.maxHeight = "150px";
         body.style.whiteSpace = "nowrap";
@@ -132,3 +144,28 @@ function expandPost(item: HTMLElement) {
         body.style.whiteSpace = "normal";
     }
 }
+
+function makeFavorite(e: any, post: HTMLElement) {
+    e.stopPropagation();
+    const post_id = post.id.split("_")[0].split("-")[1];
+    const favoriter_id = current_user() as any;
+    const favoritee_id = post.id.split("_")[1].split("-")[1];
+    createFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
+        const feedOfPosts = document.getElementById('feed-of-posts')!;
+        removeChildren(feedOfPosts);
+        displayPosts(feedOfPosts);
+    })
+}
+
+function removeFavorite(e: any, post: HTMLElement) {
+    e.stopPropagation();
+    const post_id = post.id.split("_")[0].split("-")[1];
+    const favoriter_id = current_user() as any;
+    const favoritee_id = post.id.split("_")[1].split("-")[1];
+    deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
+        const feedOfPosts = document.getElementById('feed-of-posts')!;
+        removeChildren(feedOfPosts);
+        displayPosts(feedOfPosts);
+    })
+}
+

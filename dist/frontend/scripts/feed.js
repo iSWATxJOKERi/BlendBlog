@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainfeed = void 0;
+const favorite_api_util_1 = require("../util/favorite_api_util");
 const misc_util_1 = require("../util/misc_util");
 const post_api_util_1 = require("../util/post_api_util");
 const mainfeed = (parent) => {
@@ -81,10 +82,12 @@ function submitThePost() {
     });
 }
 function displayPosts(parent) {
-    post_api_util_1.getPosts().then(posts => {
+    let cu = misc_util_1.current_user();
+    post_api_util_1.getPosts(cu.id).then(posts => {
         for (let i = 0; i < posts.data.length; i++) {
             const postItem = document.createElement('div');
             postItem.classList.add('post-item');
+            postItem.setAttribute('id', `postid-${posts.data[i].id}_creatorid-${posts.data[i].blogger.id}`);
             const postTitle = document.createElement('h1');
             postTitle.classList.add('posttitle');
             postTitle.innerHTML = `${posts.data[i].title}`;
@@ -97,6 +100,10 @@ function displayPosts(parent) {
             const favorite = document.createElement('span');
             favorite.classList.add('favorite-post');
             favorite.innerHTML = `<i class="far fa-heart"></i>`;
+            if (posts.data[i].favorited) {
+                let heart = favorite.getElementsByClassName('fa-heart')[0];
+                heart.style.color = 'red';
+            }
             postItem.appendChild(postTitle);
             postItem.appendChild(postDetails);
             postItem.appendChild(postBody);
@@ -106,14 +113,20 @@ function displayPosts(parent) {
             postTitle.onclick = (e) => { e.stopPropagation(); };
             postDetails.onclick = (e) => { e.stopPropagation(); };
             postBody.onclick = (e) => { e.stopPropagation(); };
-            favorite.onclick = (e) => { e.stopPropagation(); };
+            favorite.onclick = (e) => {
+                if (posts.data[i].favorited) {
+                    removeFavorite(e, postItem);
+                }
+                else {
+                    makeFavorite(e, postItem);
+                }
+            };
         }
     });
 }
 function expandPost(item) {
     // console.log("in");
     const body = item.getElementsByClassName('postbody')[0];
-    console.log(body);
     if (body.style.maxHeight === "none") {
         body.style.maxHeight = "150px";
         body.style.whiteSpace = "nowrap";
@@ -122,4 +135,26 @@ function expandPost(item) {
         body.style.maxHeight = "none";
         body.style.whiteSpace = "normal";
     }
+}
+function makeFavorite(e, post) {
+    e.stopPropagation();
+    const post_id = post.id.split("_")[0].split("-")[1];
+    const favoriter_id = misc_util_1.current_user();
+    const favoritee_id = post.id.split("_")[1].split("-")[1];
+    favorite_api_util_1.createFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
+        const feedOfPosts = document.getElementById('feed-of-posts');
+        misc_util_1.removeChildren(feedOfPosts);
+        displayPosts(feedOfPosts);
+    });
+}
+function removeFavorite(e, post) {
+    e.stopPropagation();
+    const post_id = post.id.split("_")[0].split("-")[1];
+    const favoriter_id = misc_util_1.current_user();
+    const favoritee_id = post.id.split("_")[1].split("-")[1];
+    favorite_api_util_1.deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
+        const feedOfPosts = document.getElementById('feed-of-posts');
+        misc_util_1.removeChildren(feedOfPosts);
+        displayPosts(feedOfPosts);
+    });
 }

@@ -83,7 +83,7 @@ body {
 #sessions-container {
   display: flex;
   justify-content: center;
-  padding-top: 20px; }
+  padding-top: 100px; }
 
 #login-container {
   display: flex;

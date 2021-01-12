@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentUser()) {
         session_api_util_1.setAuthToken(localStorage.jwtToken);
         navbar_1.default(app);
+        session_1.sessionCreator(app);
+        document.getElementById('sessions-container').style.display = "none";
         home_1.home(app);
     }
     else {

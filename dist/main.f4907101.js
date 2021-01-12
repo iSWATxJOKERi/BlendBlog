@@ -2220,7 +2220,50 @@ var favorites = function favorites(parent) {
 };
 
 exports.favorites = favorites;
-},{}],"dist/frontend/util/post_api_util.js":[function(require,module,exports) {
+},{}],"dist/frontend/util/favorite_api_util.js":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.deleteFavorite = exports.createFavorite = void 0;
+
+var axios_1 = __importDefault(require("axios"));
+
+var createFavorite = function createFavorite(post_id, favoritee_id, favoriter_id) {
+  return axios_1.default({
+    method: 'post',
+    url: '/api/favorites/create',
+    data: {
+      post_id: post_id,
+      favoritee_id: favoritee_id,
+      favoriter_id: favoriter_id
+    }
+  });
+};
+
+exports.createFavorite = createFavorite;
+
+var deleteFavorite = function deleteFavorite(post_id, favoritee_id, favoriter_id) {
+  return axios_1.default({
+    method: 'delete',
+    url: '/api/favorites/delete',
+    data: {
+      post_id: post_id,
+      favoritee_id: favoritee_id,
+      favoriter_id: favoriter_id
+    }
+  });
+};
+
+exports.deleteFavorite = deleteFavorite;
+},{"axios":"node_modules/axios/index.js"}],"dist/frontend/util/post_api_util.js":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -2236,10 +2279,10 @@ exports.deletePost = exports.updatePost = exports.createPost = exports.getPost =
 
 var axios_1 = __importDefault(require("axios"));
 
-var getPosts = function getPosts() {
+var getPosts = function getPosts(cu) {
   return axios_1.default({
     method: 'GET',
-    url: '/api/posts/all'
+    url: "/api/posts/".concat(cu, "/all")
   });
 };
 
@@ -2289,6 +2332,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.mainfeed = void 0;
+
+var favorite_api_util_1 = require("../util/favorite_api_util");
 
 var misc_util_1 = require("../util/misc_util");
 
@@ -2387,10 +2432,12 @@ function submitThePost() {
 }
 
 function displayPosts(parent) {
-  post_api_util_1.getPosts().then(function (posts) {
+  var cu = misc_util_1.current_user();
+  post_api_util_1.getPosts(cu.id).then(function (posts) {
     var _loop = function _loop(i) {
       var postItem = document.createElement('div');
       postItem.classList.add('post-item');
+      postItem.setAttribute('id', "postid-".concat(posts.data[i].id, "_creatorid-").concat(posts.data[i].blogger.id));
       var postTitle = document.createElement('h1');
       postTitle.classList.add('posttitle');
       postTitle.innerHTML = "".concat(posts.data[i].title);
@@ -2403,6 +2450,12 @@ function displayPosts(parent) {
       var favorite = document.createElement('span');
       favorite.classList.add('favorite-post');
       favorite.innerHTML = "<i class=\"far fa-heart\"></i>";
+
+      if (posts.data[i].favorited) {
+        var heart = favorite.getElementsByClassName('fa-heart')[0];
+        heart.style.color = 'red';
+      }
+
       postItem.appendChild(postTitle);
       postItem.appendChild(postDetails);
       postItem.appendChild(postBody);
@@ -2426,7 +2479,11 @@ function displayPosts(parent) {
       };
 
       favorite.onclick = function (e) {
-        e.stopPropagation();
+        if (posts.data[i].favorited) {
+          removeFavorite(e, postItem);
+        } else {
+          makeFavorite(e, postItem);
+        }
       };
     };
 
@@ -2439,7 +2496,6 @@ function displayPosts(parent) {
 function expandPost(item) {
   // console.log("in");
   var body = item.getElementsByClassName('postbody')[0];
-  console.log(body);
 
   if (body.style.maxHeight === "none") {
     body.style.maxHeight = "150px";
@@ -2449,7 +2505,31 @@ function expandPost(item) {
     body.style.whiteSpace = "normal";
   }
 }
-},{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/post_api_util":"dist/frontend/util/post_api_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
+
+function makeFavorite(e, post) {
+  e.stopPropagation();
+  var post_id = post.id.split("_")[0].split("-")[1];
+  var favoriter_id = misc_util_1.current_user();
+  var favoritee_id = post.id.split("_")[1].split("-")[1];
+  favorite_api_util_1.createFavorite(post_id, favoritee_id, favoriter_id.id).then(function () {
+    var feedOfPosts = document.getElementById('feed-of-posts');
+    misc_util_1.removeChildren(feedOfPosts);
+    displayPosts(feedOfPosts);
+  });
+}
+
+function removeFavorite(e, post) {
+  e.stopPropagation();
+  var post_id = post.id.split("_")[0].split("-")[1];
+  var favoriter_id = misc_util_1.current_user();
+  var favoritee_id = post.id.split("_")[1].split("-")[1];
+  favorite_api_util_1.deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(function () {
+    var feedOfPosts = document.getElementById('feed-of-posts');
+    misc_util_1.removeChildren(feedOfPosts);
+    displayPosts(feedOfPosts);
+  });
+}
+},{"../util/favorite_api_util":"dist/frontend/util/favorite_api_util.js","../util/misc_util":"dist/frontend/util/misc_util.js","../util/post_api_util":"dist/frontend/util/post_api_util.js"}],"dist/frontend/scripts/search.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2520,16 +2600,18 @@ var home = function home(app) {
   app.appendChild(blog); //onclick for logging out 
 
   logout.onclick = function () {
-    logUserOut(logout);
+    logUserOut(logout, app, blog);
   };
 };
 
 exports.home = home;
 
-function logUserOut(ele) {
+function logUserOut(ele, app, main) {
   localStorage.removeItem('jwtToken');
   session_api_util_1.setAuthToken(false);
   ele.style.display = "none";
+  main.style.display = "none"; // sessionCreator(app);
+
   document.getElementById('sessions-container').style.display = "flex";
 }
 },{"../util/misc_util":"dist/frontend/util/misc_util.js","../util/session_api_util":"dist/frontend/util/session_api_util.js","./favorites":"dist/frontend/scripts/favorites.js","./feed":"dist/frontend/scripts/feed.js","./search":"dist/frontend/scripts/search.js"}],"dist/frontend/scripts/session.js":[function(require,module,exports) {
@@ -2732,6 +2814,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (currentUser()) {
     session_api_util_1.setAuthToken(localStorage.jwtToken);
     navbar_1.default(app);
+    session_1.sessionCreator(app);
+    document.getElementById('sessions-container').style.display = "none";
     home_1.home(app);
   } else {
     navbar_1.default(app);
@@ -2766,7 +2850,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54916" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56987" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
