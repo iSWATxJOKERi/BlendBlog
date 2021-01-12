@@ -55,7 +55,8 @@ export const displayFavorites = (parent: HTMLElement) => {
 
                 postItem.appendChild(postTitle);
                 postItem.appendChild(postDetails);
-                parent.appendChild(postItem);
+                favoritePostsContainer.appendChild(postItem);
+                parent.appendChild(favoritePostsContainer);
                 let p_id = postItem.id.split("-")[1];
 
                 postItem.onclick = () => { toggleShowModal(parseInt(p_id)) };

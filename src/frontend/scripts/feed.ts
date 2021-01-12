@@ -153,7 +153,7 @@ export const makeFavorite = (e: any, post: HTMLElement) => {
     const favoritee_id = post.id.split("_")[1].split("-")[1];
     createFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
         const feedOfPosts = document.getElementById('feed-of-posts')!;
-        const favoritesContainer = document.getElementById('favorites-container')!;
+        const favoritesContainer = document.getElementsByClassName('favorite-posts-container')[0]! as HTMLElement;
         removeChildren(feedOfPosts);
         removeChildren(favoritesContainer);
         displayPosts(feedOfPosts);
@@ -168,7 +168,7 @@ export const removeFavorite = (e: any, post: HTMLElement) => {
     const favoritee_id = post.id.split("_")[1].split("-")[1];
     deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
         const feedOfPosts = document.getElementById('feed-of-posts')!;
-        const favoritesContainer = document.getElementById('favorites-container')!;
+        const favoritesContainer = document.getElementsByClassName('favorite-posts-container')[0]! as HTMLElement;
         removeChildren(feedOfPosts);
         removeChildren(favoritesContainer);
         displayPosts(feedOfPosts);
