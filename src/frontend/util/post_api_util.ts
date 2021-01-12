@@ -8,10 +8,10 @@ export const getPosts = (cu: any): any => {
     })
 }
 
-export const getPost = (id: number) => {
+export const getPost = (id: number, current: number | string) => {
     return axios({
         method: 'GET',
-        url: `/api/posts/${ id }`
+        url: `/api/posts/${ id }-${ current }`
     })
 }
 

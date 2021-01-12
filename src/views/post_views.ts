@@ -12,7 +12,9 @@ export const postsIndexView = async (arr: any[], cu: number | string) => {
     return result;
 }
 
-export const postShowView = (arr: any[]) => {
-    const user =  <any>User.findById(arr[0].blogger_id);
-    return Object.assign({ blogger: user.rows[0] }, arr[0]);
+export const postShowView = async (arr: any[], cu: number | string) => {
+    const user =  await <any>User.findById(arr[0].blogger_id);
+    const fav = await <any>Favorite.findBy({ post_id: arr[0].id, favoriter_id: cu, favoritee_id: arr[0].blogger_id });
+    const favorited = fav.rows.length > 0 ? true : false;
+    return Object.assign({ favorited, blogger: user.rows[0] }, arr[0]);
 }

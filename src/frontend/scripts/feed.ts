@@ -1,6 +1,7 @@
 import { createFavorite, deleteFavorite } from "../util/favorite_api_util";
 import { clearInputs, current_user, notice, removeChildren } from "../util/misc_util";
 import { createPost, getPosts } from "../util/post_api_util";
+import { displayFavorites } from "./favorites";
 
 export const mainfeed = (parent: HTMLElement) => {
     const feed: HTMLElement = document.createElement('div');
@@ -145,27 +146,33 @@ function expandPost(item: HTMLElement) {
     }
 }
 
-function makeFavorite(e: any, post: HTMLElement) {
+export const makeFavorite = (e: any, post: HTMLElement) => {
     e.stopPropagation();
     const post_id = post.id.split("_")[0].split("-")[1];
     const favoriter_id = current_user() as any;
     const favoritee_id = post.id.split("_")[1].split("-")[1];
     createFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
         const feedOfPosts = document.getElementById('feed-of-posts')!;
+        const favoritesContainer = document.getElementById('favorites-container')!;
         removeChildren(feedOfPosts);
+        removeChildren(favoritesContainer);
         displayPosts(feedOfPosts);
+        displayFavorites(favoritesContainer);
     })
 }
 
-function removeFavorite(e: any, post: HTMLElement) {
+export const removeFavorite = (e: any, post: HTMLElement) => {
     e.stopPropagation();
     const post_id = post.id.split("_")[0].split("-")[1];
     const favoriter_id = current_user() as any;
     const favoritee_id = post.id.split("_")[1].split("-")[1];
     deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
         const feedOfPosts = document.getElementById('feed-of-posts')!;
+        const favoritesContainer = document.getElementById('favorites-container')!;
         removeChildren(feedOfPosts);
+        removeChildren(favoritesContainer);
         displayPosts(feedOfPosts);
+        displayFavorites(favoritesContainer);
     })
 }
 

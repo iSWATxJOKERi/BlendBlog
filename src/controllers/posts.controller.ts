@@ -16,9 +16,10 @@ export const getPosts = async (req: Request, res: Response): Promise<Response> =
 
 export const getPost = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const id = parseInt(req.params.id);
+        const prms = req.params.id.split("-");
+        const id = parseInt(prms[0]);
         const response: QueryResult = await Post.findById(id);
-        const result = await postShowView(response.rows);
+        const result = await postShowView(response.rows, parseInt(prms[1]));
         return res.status(200).json(result);
     } catch (e) {
         return res.status(500).json('Internal Server Error');
