@@ -43,5 +43,5 @@
 
 #### Running the project:
 - npm install
-- then run npm build
+- then run npm build which compiles the typescript to javascript bundles into a new directory called /dist
 - then enter npm run dev and head to localhost:5000
