@@ -20,6 +20,7 @@
 #### Backend:
 - PostgreSQL
 - TypeScript
+- Express and used Parcel to bundle the index.html to the frontend in order to run the script
 #### Testing:
 - Jest Unit Testing
 
