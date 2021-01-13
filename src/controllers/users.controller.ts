@@ -60,7 +60,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     const user: QueryResult = await User.findBy({ username: username });
     if(user.rows.length < 1) {
-        return res.status(400).json({ credentials: 'Incorrect Username or Password' });
+        return res.status(400).json({ username: 'Incorrect Username or Password' });
     } else {
         bcrypt.compare(password, user.rows[0].password).then(isMatch => {
             if(isMatch) {
@@ -68,7 +68,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 const secret = <Secret>process.env.SECRET_OR_KEY;
                 jwt.sign(payload, secret, { expiresIn: '365d' }, (err, token) => { res.json({ success: true, token: 'Bearer ' + token })});
             } else {
-                return res.status(400).json({ credentials: 'Incorrect Username or Password' });
+                return res.status(400).json({ username: 'Incorrect Username or Password' });
             }
         })
     }

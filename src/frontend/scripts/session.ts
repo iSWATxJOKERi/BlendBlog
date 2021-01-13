@@ -1,7 +1,7 @@
 import { login, setAuthToken, signup } from "../util/session_api_util";
 import { home } from "./home";
 import jwt_decode from 'jwt-decode';
-import { clearInputs } from "../util/misc_util";
+import { clearInputs, removeParentAndChildren } from "../util/misc_util";
 
 export const sessionCreator = (app: HTMLElement) => {
     //creates session container
@@ -85,6 +85,14 @@ function toggleForm(field: string) {
     
     const b1: HTMLCollectionOf<HTMLInputElement> = document.getElementsByClassName('session-input') as HTMLCollectionOf<HTMLInputElement>;
     clearInputs(b1);
+    const ul = document.getElementsByClassName('errors')[0] as HTMLUListElement;
+    if(ul) {
+        removeParentAndChildren(ul);
+    }
+    const ul2 = document.getElementsByClassName('signup-errors')[0] as HTMLUListElement;
+    if(ul2) {
+        removeParentAndChildren(ul2);
+    }
     if(field === 'login') {
         login.style.display = "none";
         signup.style.display = "flex";
@@ -111,6 +119,26 @@ function signinUser() {
         document.getElementById('sessions-container')!.style.display = "none";
         const app: HTMLElement = document.getElementById('application')!;
         home(app);
+    }, errors => {
+        const ul = document.getElementsByClassName('errors')[0] as HTMLUListElement;
+        if(ul) {
+            removeParentAndChildren(ul);
+        }
+        // console.log(errors.response.data);
+        if(errors.response.data.valid === false) {
+            delete errors.response.data['valid']
+        }
+        let arr = Object.values(errors.response.data);
+        let loginContainer: HTMLElement = document.getElementById('login-container')!;
+        const mistake: HTMLUListElement = document.createElement('ul');
+        mistake.classList.add('errors');
+        for(let i: number = 0; i < arr.length; i++) {
+            const li: HTMLLIElement = document.createElement("li");
+            li.classList.add('list-error');
+            li.innerHTML = `${ arr[i] }`;
+            mistake.appendChild(li);
+        }
+        loginContainer.appendChild(mistake);
     })
 }
 
@@ -136,6 +164,26 @@ function signupUser() {
         document.getElementById('sessions-container')!.style.display = "none";
         const app: HTMLElement = document.getElementById('application')!;
         home(app);
+    }, errors => {
+        const ul = document.getElementsByClassName('signup-errors')[0] as HTMLUListElement;
+        if(ul) {
+            removeParentAndChildren(ul);
+        }
+        console.log(errors.response.data);
+        if(errors.response.data.valid === false) {
+            delete errors.response.data['valid']
+        }
+        let arr = Object.values(errors.response.data);
+        let signupContainer: HTMLElement = document.getElementById('signup-container')!;
+        const mistake: HTMLUListElement = document.createElement('ul');
+        mistake.classList.add('signup-errors');
+        for(let i: number = 0; i < arr.length; i++) {
+            const li: HTMLLIElement = document.createElement("li");
+            li.classList.add('signup-list-error');
+            li.innerHTML = `${ arr[i] }`;
+            mistake.appendChild(li);
+        }
+        signupContainer.appendChild(mistake);
     })
 }
 

@@ -49,6 +49,7 @@ body {
     height: 270px;
     justify-content: space-evenly;
     align-items: center;
+    position: relative;
 }
 
 #signup-container {
@@ -58,6 +59,7 @@ body {
     height: 310px;
     justify-content: space-around;
     width: 480px;
+    position: relative;
 }
 
 .pass-container {
@@ -89,6 +91,44 @@ body {
     height: 25px;
     border-radius: 7px;
     margin-right: 10px;
+}
+
+.errors {
+    position: absolute;
+    right: -160px;
+    top: 60px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-size: 14px;
+    padding: 7px;
+    border-radius: 7px;
+    background-color: orangered;
+    max-width: 170px;
+}
+
+.list-error {
+    display: flex;
+    text-align: center;
+}
+
+.signup-errors {
+    position: absolute;
+    right: -260px;
+    top: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-size: 14px;
+    padding: 7px;
+    border-radius: 7px;
+    background-color: orangered;
+}
+
+.signup-list-error {
+    display: flex;
+    text-align: center;
 }
 
 .btn:hover, .create-account:hover, .signin:hover, .logout:hover {
