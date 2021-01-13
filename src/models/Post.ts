@@ -13,19 +13,11 @@ export class Post {
 
     static async findBy(category: any = {}) {
         let arr: string[] = Object.keys(category);
-        let queries: string = `SELECT * FROM posts WHERE ${ arr[0] } LIKE $1`;
-        let parameters: any[] = [category[arr[0]]];
+        let queries: string = `SELECT * FROM posts WHERE ${ arr[0] } LIKE '%${ category[arr[0]] }%'`;
         for(let i: number = 1; i < arr.length; i++) {
-            queries += (' AND ' + arr[i] + ` LIKE $${ i + 1 }`);
-            if(arr[i] === "title") {
-                parameters.push(category.title)
-            } else if(arr[i] === "date") {
-                parameters.push(category.date)
-            } else {
-                parameters.push(category.username)
-            }
+            queries += (` OR ${ arr[i] } LIKE '%${ category[arr[i]] }%'`);
         }
-        const result: QueryResult = await pool.query(queries, parameters);
+        const result: QueryResult = await pool.query(queries);
         return result;
     }
 

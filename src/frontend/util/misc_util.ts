@@ -22,16 +22,41 @@ export const notice = (message: any) => {
     }, 4500)
 }
 
-export const removeParentAndChildren = (element: HTMLElement, id: any) => {
+export const removeParentAndChildren = (element: HTMLElement, id?: any) => {
     while(element.lastChild) {
         element.removeChild(element.lastChild);
     }
     element.remove();
-    clearTimeout(id);
+    if(id) {
+        clearTimeout(id);
+    }
 }
 
 export const removeChildren = (element: HTMLElement) => {
     while(element.lastChild) {
         element.removeChild(element.lastChild);
     }
+}
+
+const MONTHS: any = {
+    0: "January",
+    1: "February",
+    2: "March",
+    3: "April",
+    4: "May",
+    5: "June",
+    6: "July",
+    7: "August",
+    8: "September",
+    9: "October",
+    10: "November",
+    11: "December"
+}
+
+export const dateConverter = (uglyDate: Date) => {
+    let month = uglyDate.getMonth();
+    let day = uglyDate.getDate();
+    let year = uglyDate.getFullYear();
+
+    return MONTHS[month] + ` ${ day },` + ` ${ year }`
 }

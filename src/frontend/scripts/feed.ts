@@ -101,7 +101,7 @@ function displayPosts(parent: HTMLElement) {
             postTitle.innerHTML = `${ posts.data[i].title }`;
             const postDetails: HTMLElement = document.createElement('span');
             postDetails.classList.add('postdetails');
-            postDetails.innerHTML = `by ${ posts.data[i].blogger.username } on ${ posts.data[i].created_at }`;
+            postDetails.innerHTML = `by ${ posts.data[i].blogger.username } on ${ posts.data[i].date }`;
             const postBody: HTMLElement = document.createElement('p');
             postBody.classList.add('postbody');
             postBody.innerHTML = `${ posts.data[i].body }`;
@@ -154,10 +154,14 @@ export const makeFavorite = (e: any, post: HTMLElement) => {
     createFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
         const feedOfPosts = document.getElementById('feed-of-posts')!;
         const favoritesContainer = document.getElementsByClassName('favorite-posts-container')[0]! as HTMLElement;
+        const input = document.getElementsByClassName('search-input')[0]! as HTMLInputElement;
         removeChildren(feedOfPosts);
         removeChildren(favoritesContainer);
         displayPosts(feedOfPosts);
         displayFavorites(favoritesContainer);
+        let str = input.value;
+        input.value = "";
+        input.value = str;
     })
 }
 
@@ -169,10 +173,14 @@ export const removeFavorite = (e: any, post: HTMLElement) => {
     deleteFavorite(post_id, favoritee_id, favoriter_id.id).then(() => {
         const feedOfPosts = document.getElementById('feed-of-posts')!;
         const favoritesContainer = document.getElementsByClassName('favorite-posts-container')[0]! as HTMLElement;
+        const input = document.getElementsByClassName('search-input')[0]! as HTMLInputElement;
         removeChildren(feedOfPosts);
         removeChildren(favoritesContainer);
         displayPosts(feedOfPosts);
         displayFavorites(favoritesContainer);
+        let str = input.value;
+        input.value = "";
+        input.value = str;
     })
 }
 

@@ -14,6 +14,9 @@
 
 #search {
     width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #feed {
@@ -42,6 +45,7 @@
     align-items: center;
     height: 120px;
     justify-content: space-around;
+    width: 100%;
 }
 
 .search-input {
@@ -187,7 +191,7 @@
     margin-bottom: 7px;
 }
 
-.post-modal-background {
+.post-modal-background, .search-modal-background {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -197,7 +201,7 @@
     z-index: 10;
 }
 
-.post-modal-child {
+.post-modal-child, .search-modal-child {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -210,22 +214,22 @@
     border-radius: 17px;
 }
 
-.modaltitle {
+.modaltitle, .search-modaltitle {
     font-size: 32px;
 }
 
-.modalbody {
+.modalbody, .search-modalbody {
     overflow-y: scroll;
     max-height: 600px;
 }
 
-.modaldetails {
+.modaldetails, .search-modaldetails {
     padding-bottom: 7px;
     border-bottom: 1px solid silver;
     margin-bottom: 10px;
 }
 
-.modal-favorite-post {
+.modal-favorite-post, .search-modal-favorite-post {
     align-self: end;
     font-size: 20px;
     width: 25px;
@@ -233,6 +237,28 @@
     justify-content: center;
 }
 
-.create-post-btn:hover, .search-btn:hover, .submit-post:hover, .favorite-post:hover, .favorite-post-item:hover, .modal-favorite-post:hover {
+.favorites-message {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.search-post-item {
+    display: flex;
+    flex-direction: column;
+    padding: 7px;
+    border: 1px solid silver;
+    border-radius: 7px;
+    background-color: #010011;
+    margin-bottom: 7px;
+}
+
+.search-posts-container {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.create-post-btn:hover, .search-btn:hover, .submit-post:hover, .favorite-post:hover, .favorite-post-item:hover, .search-post-item:hover, .modal-favorite-post:hover, .search-modal-favorite-post:hover {
     cursor: pointer;
 }

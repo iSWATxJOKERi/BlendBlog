@@ -8,6 +8,13 @@ export const getPosts = (cu: any): any => {
     })
 }
 
+export const deliverPosts = (query: string, cu: number | string) => {
+    return axios({
+        method: 'GET',
+        url: `/api/posts/search/${ query }/id/${ cu }`
+    })
+}
+
 export const getPost = (id: number, current: number | string) => {
     return axios({
         method: 'GET',

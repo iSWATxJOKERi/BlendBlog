@@ -1,4 +1,5 @@
 -- CREATE DATABASE blendblog;
+DROP TABLE favorites;
 DROP TABLE posts;
 DROP TABLE users;
 
@@ -16,6 +17,8 @@ CREATE TABLE posts (
     body TEXT NOT NULL,
     created_at DATE NOT NULL DEFAULT NOW(),
     blogger_id SERIAL NOT NULL,
+    date VARCHAR(26) NOT NULL,
+    username VARCHAR(16) NOT NULL,
 
     FOREIGN KEY (blogger_id) REFERENCES users(id)
 );

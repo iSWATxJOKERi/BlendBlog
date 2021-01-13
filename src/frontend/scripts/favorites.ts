@@ -34,14 +34,15 @@ export const favorites = (parent: HTMLElement) => {
 export const displayFavorites = (parent: HTMLElement) => {
     let cu = current_user() as any;
     getFavoritePosts(cu.id).then(posts => {
+        const favoritePostsContainer: HTMLElement = document.createElement('div');
+        favoritePostsContainer.classList.add('favorite-posts-container');
         if(posts.data === "Favorite some posts to see them here!") {
             const message: HTMLElement = document.createElement('span');
             message.classList.add('favorites-message');
             message.innerHTML = "Favorite some posts to see them here!"
-            parent.appendChild(message);
+            favoritePostsContainer.appendChild(message);
+            parent.appendChild(favoritePostsContainer);
         } else {
-            const favoritePostsContainer: HTMLElement = document.createElement('div');
-            favoritePostsContainer.classList.add('favorite-posts-container');
             for(let i: number = 0; i < posts.data.length; i++) {
                 const postItem: HTMLElement = document.createElement('div');
                 postItem.classList.add('favorite-post-item');
@@ -51,7 +52,7 @@ export const displayFavorites = (parent: HTMLElement) => {
                 postTitle.innerHTML = `${ posts.data[i].title }`;
                 const postDetails: HTMLElement = document.createElement('span');
                 postDetails.classList.add('favoritepostdetails');
-                postDetails.innerHTML = `by ${ posts.data[i].blogger.username } on ${ posts.data[i].created_at }`;
+                postDetails.innerHTML = `by ${ posts.data[i].blogger.username } on ${ posts.data[i].date }`;
 
                 postItem.appendChild(postTitle);
                 postItem.appendChild(postDetails);
@@ -85,7 +86,7 @@ export const postShowModal = (id: number, modalBackground: HTMLElement, modalChi
         postTitle.innerHTML = `${ post.data.title }`;
         const postDetails: HTMLElement = document.createElement('span');
         postDetails.classList.add('modaldetails');
-        postDetails.innerHTML = `by ${ post.data.blogger.username } on ${ post.data.created_at }`;
+        postDetails.innerHTML = `by ${ post.data.blogger.username } on ${ post.data.date }`;
         const postBody: HTMLElement = document.createElement('p');
         postBody.classList.add('modalbody');
         postBody.innerHTML = `${ post.data.body }`;
