@@ -1,4 +1,4 @@
-import { clearInputs } from "../util/misc_util";
+import { clearInputs, removeParentAndChildren } from "../util/misc_util";
 import { setAuthToken } from "../util/session_api_util";
 import { favorites } from "./favorites";
 import { mainfeed } from "./feed";
@@ -6,6 +6,8 @@ import { searchContainer } from "./search";
 import { sessionCreator } from "./session";
 
 export const home = (app: HTMLElement) => {
+    let sesh = document.getElementById('sessions-container')!;
+    removeParentAndChildren(sesh);
     //clear inputs and add logout button to navbar
     const b1: HTMLCollectionOf<HTMLInputElement> = document.getElementsByClassName('session-input') as HTMLCollectionOf<HTMLInputElement>;
     clearInputs(b1);
@@ -34,8 +36,9 @@ function logUserOut(ele: HTMLElement, app: HTMLElement, main: HTMLElement) {
     localStorage.removeItem('jwtToken');
     setAuthToken(false);
     ele.style.display = "none";
-    main.style.display = "none";
+    // main.style.display = "none";
+    removeParentAndChildren(main);
 
-    // sessionCreator(app);
-    document.getElementById('sessions-container')!.style.display = "flex";
+    sessionCreator(app);
+    // document.getElementById('sessions-container')!.style.display = "flex";
 }
