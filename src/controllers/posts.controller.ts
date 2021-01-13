@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import { pool } from '../database';
 import { dateConverter } from '../frontend/util/misc_util';
+import { Favorite } from '../models/Favorite';
 import { Post } from '../models/Post';
 import { User } from '../models/User';
 import { postsIndexView, postShowView } from '../views/post_views';
@@ -62,6 +63,10 @@ export const updatePost = async (req: Request, res: Response) => {
 export const deletePost = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
+        let response: QueryResult = await Favorite.findBy({ post_id: req.params.id });
+        if(response.rows.length > 0) {
+            await pool.query('DELETE FROM favorites WHERE post_id = $1', [id]);
+        }
         await pool.query('DELETE FROM posts WHERE id = $1', [id]);
         return res.status(200).json({ success: 'Post deleted succesfully!'});
     } catch (e) {

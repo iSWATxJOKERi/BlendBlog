@@ -7,6 +7,6 @@ router.get("/posts/search/:query/id/:cu", deliverSearch);
 router.get("/posts/:id", getPost);
 router.post("/posts/create", createPost);
 router.patch("/posts/:id/update", updatePost);
-router.delete("posts/:id/delete", deletePost);
+router.delete("/posts/:id/delete", deletePost);
 
 export default router;

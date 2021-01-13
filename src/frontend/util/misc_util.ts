@@ -15,7 +15,7 @@ export const notice = (message: any) => {
     const app: HTMLElement = document.getElementById('application')!;
     const notify: HTMLElement = document.createElement('span');
     notify.setAttribute('id', 'notice');
-    notify.innerHTML = `${ message.success }`;
+    notify.innerHTML = `${ message }`;
     app.appendChild(notify);
     const removeNotice = setTimeout(() => {
         removeParentAndChildren(notify, removeNotice);

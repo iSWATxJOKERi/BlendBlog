@@ -5,11 +5,14 @@
 
 #notice {
     background-color: #2b20b2;
-    height: 40px;
+    height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 5px;
+    position: fixed;
+    top: 60px;
+    width: 100%;
 }
 
 #search {
@@ -127,7 +130,7 @@
     width: 90%;
 }
 
-.submit-post {
+.submit-post, .update-post {
     display: flex;
     justify-content: center;
     padding: 5px 7px;
@@ -162,6 +165,7 @@
     border-radius: 7px;
     margin-bottom: 20px;
     background-color: #010011;
+    position: relative;
 }
 
 .postbody {
@@ -259,6 +263,20 @@
     flex-direction: column;
 }
 
-.create-post-btn:hover, .search-btn:hover, .submit-post:hover, .favorite-post:hover, .favorite-post-item:hover, .search-post-item:hover, .modal-favorite-post:hover, .search-modal-favorite-post:hover {
+.remove-post {
+    position: absolute;
+    right: 50px;
+}
+
+.edit-post {
+    position: absolute;
+    right: 15px;
+}
+
+.post-item:hover .canshow {
+    display: block;
+}
+
+.create-post-btn:hover, .remove-post:hover, .edit-post:hover, .search-btn:hover, .submit-post:hover, .update-post:hover, .favorite-post:hover, .favorite-post-item:hover, .search-post-item:hover, .modal-favorite-post:hover, .search-modal-favorite-post:hover {
     cursor: pointer;
 }

@@ -1,6 +1,6 @@
 import { createFavorite, deleteFavorite } from "../util/favorite_api_util";
-import { clearInputs, current_user, notice, removeChildren } from "../util/misc_util";
-import { createPost, getPosts } from "../util/post_api_util";
+import { clearInputs, current_user, notice, removeChildren, removeParentAndChildren } from "../util/misc_util";
+import { createPost, deletePost, getPosts, updatePost } from "../util/post_api_util";
 import { displayFavorites } from "./favorites";
 
 export const mainfeed = (parent: HTMLElement) => {
@@ -28,6 +28,10 @@ export const mainfeed = (parent: HTMLElement) => {
 }
 
 function toggleModal(type: string) {
+    const btn = document.getElementsByClassName('update-post')[0]! as HTMLElement;
+    if(btn) {
+        removeParentAndChildren(btn);
+    }
     const modal = document.getElementsByClassName('modal-background')[0] as HTMLElement;
     const b1: HTMLCollectionOf<HTMLInputElement> = document.getElementsByClassName('post-input') as HTMLCollectionOf<HTMLInputElement>;
     clearInputs(b1);
@@ -82,7 +86,7 @@ function submitThePost() {
     }
     createPost(post).then((message: any) => {
         toggleModal('close');
-        notice(message);
+        notice(message.data.success);
         const feedOfPosts = document.getElementById('feed-of-posts')!;
         removeChildren(feedOfPosts);
         displayPosts(feedOfPosts);
@@ -108,6 +112,12 @@ function displayPosts(parent: HTMLElement) {
             const favorite: HTMLElement = document.createElement('span');
             favorite.classList.add('favorite-post');
             favorite.innerHTML = `<i class="far fa-heart"></i>`;
+            const edit: HTMLElement = document.createElement('span');
+            edit.classList.add('edit-post');
+            edit.innerHTML = `<i class="fas fa-pen"></i>`;
+            const remove: HTMLElement = document.createElement('span');
+            remove.classList.add('remove-post');
+            remove.innerHTML = `<i class="fas fa-trash"></i>`;
             if(posts.data[i].favorited) {
                 let heart = favorite.getElementsByClassName('fa-heart')[0] as HTMLElement;
                 heart.style.color = 'red';
@@ -115,9 +125,15 @@ function displayPosts(parent: HTMLElement) {
 
             postItem.appendChild(postTitle);
             postItem.appendChild(postDetails);
+            postItem.appendChild(remove);
+            postItem.appendChild(edit);
             postItem.appendChild(postBody);
             postItem.appendChild(favorite);
             parent.appendChild(postItem);
+            if(cu.id !== posts.data[i].blogger.id) {
+                remove.style.display = "none";
+                edit.style.display = "none";
+            }
 
             postItem.onclick = () => { expandPost(postItem) };
             postTitle.onclick = (e) => { e.stopPropagation() };
@@ -129,6 +145,12 @@ function displayPosts(parent: HTMLElement) {
                 } else {
                     makeFavorite(e, postItem);
                 }
+            };
+            remove.onclick = (e) => {
+                trashPost(e, postItem);
+            };
+            edit.onclick = (e) => {
+                editPost(e, postItem);
             };
         }
     })
@@ -144,6 +166,67 @@ function expandPost(item: HTMLElement) {
         body.style.maxHeight = "none";
         body.style.whiteSpace = "normal";
     }
+}
+
+export const editPost = (e: Event, post: HTMLElement) => {
+    e.stopPropagation();
+    const t = post.getElementsByClassName('posttitle')[0] as HTMLElement;
+    const b = post.getElementsByClassName('postbody')[0] as HTMLElement;
+    toggleModal('show');
+    const post_id = post.id.split("_")[0].split("-")[1];
+    const ttl = document.getElementsByClassName('post-title')[0] as HTMLInputElement;
+    ttl.value = t.innerHTML;
+    const bdy = document.getElementsByClassName('post-body')[0] as HTMLInputElement;
+    bdy.value = b.innerHTML;
+    const b_id = current_user() as any;
+    const sBtn = document.getElementsByClassName('submit-post')[0] as HTMLElement;
+    sBtn.style.display = "none";
+    const updateButton: HTMLElement = document.createElement('span');
+    updateButton.classList.add('update-post');
+    updateButton.innerHTML = "Update Post";
+    const modal_child = document.getElementsByClassName('modal-child')[0] as HTMLElement;
+    modal_child.appendChild(updateButton);
+    updateButton.onclick = () => {
+        const updated = {
+            title: ttl.value,
+            body: bdy.value,
+            blogger_id: b_id.id as number,
+            valid: true
+        }
+        updatePost(parseInt(post_id), updated).then((message: any) => {
+            toggleModal('close');
+            notice(message.data.success);
+            const feedOfPosts = document.getElementById('feed-of-posts')!;
+            removeChildren(feedOfPosts);
+            displayPosts(feedOfPosts);
+
+            const favoritesContainer = document.getElementsByClassName('favorite-posts-container')[0]! as HTMLElement;
+            const input = document.getElementsByClassName('search-input')[0]! as HTMLInputElement;
+            removeChildren(favoritesContainer);
+            displayFavorites(favoritesContainer);
+            let str = input.value;
+            input.value = "";
+            input.value = str;
+        })
+    }
+};
+
+export const trashPost = (e: Event, post: HTMLElement) => {
+    e.stopPropagation();
+    const post_id = post.id.split("_")[0].split("-")[1];
+    deletePost(parseInt(post_id)).then(() => {
+        const feedOfPosts = document.getElementById('feed-of-posts')!;
+        removeChildren(feedOfPosts);
+        displayPosts(feedOfPosts);
+
+        const favoritesContainer = document.getElementsByClassName('favorite-posts-container')[0]! as HTMLElement;
+        const input = document.getElementsByClassName('search-input')[0]! as HTMLInputElement;
+        removeChildren(favoritesContainer);
+        displayFavorites(favoritesContainer);
+        let str = input.value;
+        input.value = "";
+        input.value = str;
+    })
 }
 
 export const makeFavorite = (e: any, post: HTMLElement) => {
